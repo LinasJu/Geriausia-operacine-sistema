@@ -3,10 +3,14 @@
 
 
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(uint8_t *pid,uint16_t *pc,uint16_t *sp, uint8_t *cx,QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    this->pid=pid;
+    this->pc=pc;
+    this->sp=sp;
+    this->cx=cx;
     ui->setupUi(this);
     QMainWindow::showMaximized();
     ui->tableVM->horizontalHeader()->setSectionResizeMode (QHeaderView::Fixed);
@@ -46,6 +50,16 @@ void MainWindow::initTable(){
     for(uint8_t i = 0; i<16 ; i++){
         for(uint8_t j = 0 ; j<16; j++){
              ui->tableVM->setItem(i, j, new QTableWidgetItem(QString("")));
+             if(i<6){
+                 ui->tableVM->item(i, j)->setBackground(Qt::blue);
+             }
+             else if(i<13){
+                 ui->tableVM->item(i, j)->setBackground(Qt::green);
+             }
+             else{
+                 ui->tableVM->item(i, j)->setBackground(Qt::yellow);
+             }
+
         }
     }
     for(uint8_t i = 0; i<16 ; i++){
@@ -91,4 +105,37 @@ void MainWindow::headerToolTip(uint8_t row){
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+void MainWindow::update(){
+    ui->lineEdit_22->setText(QString::number( *pc ) );
+    ui->lineEdit_21->setText(QString::number( *pid ));
+    ui->lineEdit_23->setText(QString::number( *sp ));
+    ui->lineEdit_24->setText(QString::number( *cx ));
+    int row;
+    int column;
+    for(uint8_t i = 0; i<16 ; i++){
+        for(uint8_t j = 0 ; j<16; j++){
+             if(i<6){
+                 ui->tableVM->item(i, j)->setBackground(Qt::blue);
+             }
+             else if(i<13){
+                 ui->tableVM->item(i, j)->setBackground(Qt::green);
+             }
+             else{
+                 ui->tableVM->item(i, j)->setBackground(Qt::yellow);
+             }
+
+        }
+    }
+    row=*pc/16;
+    column=*pc%16;
+    ui->tableVM->item(row, column)->setBackground(Qt::red);
+    row=(*sp%256)/16 + 13;
+    column=(*sp%256)%16;
+    ui->tableVM->item(row, column)->setBackground(Qt::red);
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    this->initTable();
 }
