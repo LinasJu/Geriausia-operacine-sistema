@@ -3,7 +3,7 @@
 
 MemoryBlock::MemoryBlock()
 {
-    for(int i = 0; i < 256; i++){
+    for(int i = 0; i < 16; i++){
         cell[i] = rand() % 0x10000;
     }
 }
