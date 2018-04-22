@@ -26,11 +26,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    rm.cpp
+    rm.cpp \
+    channel.cpp \
+    flashreader.cpp \
+    memory.cpp \
+    memoryblock.cpp \
+    printer.cpp \
+    virtualmachine.cpp \
+    vm.cpp
 
 HEADERS += \
         mainwindow.h \
-    rm.h
+    rm.h \
+    channel.h \
+    device.h \
+    flashreader.h \
+    inputdevice.h \
+    memory.h \
+    memoryblock.h \
+    outputdevice.h \
+    printer.h \
+    virtualmachine.h \
+    vm.h
 
 FORMS += \
         mainwindow.ui
