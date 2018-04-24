@@ -230,7 +230,7 @@ void VM::div()
     cpu->clearSF();
 
     if(!b){
-        cpu->setOF(true);
+        cpu->setPI(4);
         return;
     }
 
@@ -366,12 +366,12 @@ void VM::isc()
 
 void VM::halt()
 {
-
+    cpu->setSI(4);
 }
 
 void VM::stop()
 {
-
+    cpu->setSI(4);
 }
 
 void VM::prts()
