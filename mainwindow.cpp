@@ -3,46 +3,39 @@
 
 
 
-MainWindow::MainWindow(uint8_t *pid,uint16_t *pc,uint16_t *sp, uint8_t *cx,QWidget *parent) :
+
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    this->pid=pid;
-    this->pc=pc;
-    this->sp=sp;
-    this->cx=cx;
+    realmachine = new RM();
+    realmachine->initWindow(*this);
     ui->setupUi(this);
     QMainWindow::showMaximized();
     ui->tableVM->horizontalHeader()->setSectionResizeMode (QHeaderView::Fixed);
     ui->tableVM->verticalHeader()->setSectionResizeMode (QHeaderView::Fixed);
     initTable();
     initRealMemoryTable();
-    addToTable(0,0,0x4b61726f);
-    addToTable(0,1,0x6c697320);
-    addToTable(0,2,0x79726120);
-    addToTable(0,3,0x67616964);
-    addToTable(0,4,0x79730000);
+    this->ui->pushButton_2->setEnabled(false);
+//    addToTable(0,0,0x4b61726f);
+//    addToTable(0,1,0x6c697320);
+//    addToTable(0,2,0x79726120);
+//    addToTable(0,3,0x67616964);
+//    addToTable(0,4,0x79730000);
 
 }
 void MainWindow::initRealMemoryTable(){
-    std::stringstream stream;
-    std::string result;
-    while(ui->tableRM->rowCount()<=0xFFF){
-    int number = ui->tableRM->rowCount();
-    stream << std::hex << std::uppercase << std::setfill('0') << std::setw(3) << number;
-    std::string result( stream.str() );
-    stream.str(std::string());
-    ui->tableRM->insertRow( ui->tableRM->rowCount() );
     QTableWidgetItem *item = new QTableWidgetItem();
-    item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-    ui->tableRM->setItem(number, 0, item);
-    item = new QTableWidgetItem();
-    item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-    ui->tableRM->setItem(number, 1, item);
-    item = new QTableWidgetItem();
-    item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-    ui->tableRM->setItem(number, 2,item);
-    ui->tableRM->setVerticalHeaderItem(number, new QTableWidgetItem(QString::fromStdString(result)));
+    while(ui->tableRM->rowCount()<=0xFF){
+    int number = ui->tableRM->rowCount();
+    ui->tableRM->insertRow( ui->tableRM->rowCount() );
+    for(int i=0;i<16;i++){
+        item = new QTableWidgetItem();
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        ui->tableRM->setItem(number, i, item);
+
+    }
+    ui->tableRM->setVerticalHeaderItem(number, new QTableWidgetItem(QString::fromStdString(this->intToHexStr(number,2))));
     }
 
 }
@@ -69,10 +62,7 @@ void MainWindow::initTable(){
     }
 }
 void MainWindow::addToTable(uint8_t row, uint8_t column, uint32_t item){
-    std::stringstream stream;
-    stream << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << item;
-    std::string result( stream.str() );
-    ui->tableVM->item(row, column)->setText(QString::fromStdString(result));
+    ui->tableVM->item(row, column)->setText(QString::fromStdString(this->intToHexStr(item,8)));
     this->addToolTip(row,column,item);
 }
 void MainWindow::addToolTip(uint8_t row, uint8_t column, uint32_t item){
@@ -107,10 +97,24 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void MainWindow::update(){
-    ui->lineEdit_22->setText(QString::number( *pc ) );
-    ui->lineEdit_21->setText(QString::number( *pid ));
-    ui->lineEdit_23->setText(QString::number( *sp ));
-    ui->lineEdit_24->setText(QString::number( *cx ));
+    this->updateRealTable();
+    ui->lineEdit_22->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),8)));
+    ui->lineEdit_21->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
+    ui->lineEdit_23->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSP(),4)));
+//    ui->lineEdit_24->setText(QString::number( this->realmachine->cp.getCX() ));
+    ui->CH1R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH1(),2)));
+    ui->CH2R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH2(),2)));
+    ui->CH3R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH3(),2)));
+    ui->PLRR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPLR(),8)));
+    ui->PCR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
+    ui->SPR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSP(),4)));
+    ui->IOIR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getIOI(),2)));
+    ui->SFR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSF(),2)));
+    ui->PIDR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
+    ui->PIR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPI(),2)));
+    ui->MODER->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getMODE(),2)));
+    ui->TIR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getTI(),2)));
+    ui->SIR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSI(),2)));
     int row;
     int column;
     for(uint8_t i = 0; i<16 ; i++){
@@ -127,15 +131,70 @@ void MainWindow::update(){
 
         }
     }
-    row=*pc/16;
-    column=*pc%16;
+    row=this->realmachine->cp->getPC1()/16;
+    column=this->realmachine->cp->getPC1()%16;
     ui->tableVM->item(row, column)->setBackground(Qt::red);
-    row=(*sp%256)/16 + 13;
-    column=(*sp%256)%16;
+    row=(this->realmachine->cp->getSP1()%256)/16 + 13;
+    column=this->realmachine->cp->getSP1()%16;
     ui->tableVM->item(row, column)->setBackground(Qt::red);
+    int table=(realmachine->cp->getPC()&0xFF00)>>8;
+    if(table>0){
+    for(int i=0;i<16;i++){
+        int block=this->realmachine->mem->get((table-1)*16+i);
+        for(int j=0;j<16;j++){
+            this->addToTable(i,j,this->realmachine->mem->get(block*16+j));
+        }
+    }
+    }
+}
+void MainWindow::updateRealTable()
+{
+    int row;
+    int column;
+    for(uint16_t i =0;i<0x1000;i++){
+        column=i&0xF;
+        row=(i&0xFF0) >> 4;
+        ui->tableRM->item(row,column)->setText(QString::fromStdString(this->intToHexStr(this->realmachine->mem->get(i),8)));
+    }
+    if(this->realmachine->cp->getPC2()){
+    for(int i = 0; i<16;i++){
+        ui->tableRM->item(((this->realmachine->cp->getPC()-1) &0xFF00)>>8,i)->setBackground(Qt::blue);
+    }}
 }
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    this->initTable();
+}
+void MainWindow::appendOutput(std::string str){
+    QString qs;
+    qs=this->ui->textBrowser->toPlainText();
+    qs+=QString::fromStdString(str);
+    this->ui->textBrowser->setText(qs);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    QString filename=QFileDialog::getOpenFileName(
+                this,
+                tr("Open File"),
+                "C://",
+                "All files (*.*)"
+                );
+    this->realmachine->insertFlash(filename.toStdString());
+    this->ui->checkBox->setChecked(true);
+    this->ui->pushButton->setEnabled(false);
+    this->ui->pushButton_2->setEnabled(true);
+
+}
+std::string MainWindow::intToHexStr(int a,int pos){
+    std::stringstream stream;
+      stream << std::setfill ('0') << std::setw(pos) << std::hex << a;
+      return stream.str();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    this->ui->pushButton->setEnabled(true);
+    this->ui->pushButton_2->setEnabled(false);
+    this->ui->checkBox->setChecked(false);
 }
