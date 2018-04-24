@@ -12,7 +12,7 @@
 class InputDevice: public Device {
 public:
     virtual ~InputDevice() = default;
-    virtual uint8_t read(uint32_t *destination, uint8_t words) = 0;
+    virtual void read(char *destination, uint16_t bytes) = 0;
 };
 
 

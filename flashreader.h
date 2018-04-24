@@ -21,9 +21,11 @@
 class FlashReader: public InputDevice {
 public:
     FlashReader();
-    uint8_t read(uint32_t *destination, uint8_t words) override;
+    ~FlashReader() override;
+    void read(char *destination, uint16_t bytes) override;
     void connectToDevice(const std::string &devicePath);
     void disconnectFromDevice();
+    uint16_t getFileSize();
 
     bool isConnected() const;
 

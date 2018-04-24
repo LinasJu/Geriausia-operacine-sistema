@@ -65,7 +65,8 @@ void Channel::getInput(uint32_t *destination, uint8_t words) {
             reader = (FlashReader*)secondDevice->first;
         }
 
-        reader->read(destination, words);
+        // deprecated method
+        //reader->read(destination, words);
     }
 
     *channel_reg = 0;

@@ -16,6 +16,7 @@ class RM
 {
 public:
     RM();
+    ~RM();
     friend class MainWindow;
     void addVM();
     bool newTable();
@@ -26,6 +27,9 @@ private:
     VM *vms[15];
     Memory *mem;
     Cpu *cp;
+    uint32_t *supervisorMemory = nullptr;
+    uint16_t supervisorSize = 0;
+
     bool isTaken(uint32_t block, uint8_t curr);
     void initWindow(MainWindow &w);
     void initPageTable();
@@ -42,6 +46,8 @@ private:
     void next();
     void run();
     bool test();
+    void readFromFlash(char *destination, uint16_t bytes);
+    void loadFlashToSupervisorMemory();
 
 };
 

@@ -9,6 +9,11 @@ RM::RM()
     this->initPageTable();
     this->newTable();//testing
 }
+
+RM::~RM() {
+    delete[] supervisorMemory;
+}
+
 void RM::addVM(){
     MemoryBlock* memory[16];
     for(uint8_t i=0;i<16;i++){
@@ -125,4 +130,44 @@ void RM::next(){
 }
 bool RM::test(){
     return ((this->cp->getPI() + this->cp->getIOI() + this->cp->getSI()) || this->cp->getTI()<=0);
+}
+
+void RM::readFromFlash(char *destination, uint16_t bytes) {
+    if (flash->isConnected()) {
+        flash->read(destination, bytes);
+    }
+}
+
+void RM::loadFlashToSupervisorMemory() {
+    uint16_t size = flash->getFileSize();
+    char *buffer = nullptr;
+
+    // allocated memory must be divisible by 4
+    if (size % 4 != 0) {
+        buffer = new char[size + size % 4];
+    }
+    else {
+        buffer = new char[size];
+    }
+
+    readFromFlash(buffer, size);
+
+    // deal with wrong file size
+    if (size % 4 != 0) {
+        for (int i = 0; i < size % 4; i++) {
+            // '?' stands for bad byte
+            *(buffer + i) = '?';
+        }
+    }
+
+    // buffer -> supervisor
+    supervisorSize = static_cast<uint16_t>((size + size % 4) / 4);
+    supervisorMemory = new uint32_t[supervisorSize];
+    for (int i = 0; i < supervisorSize; i++) {
+        supervisorMemory[i] = static_cast<uint32_t>(
+                (buffer[i] << 24) + (buffer[i + 1] << 16) + (buffer[i + 2] << 8) + buffer[i + 3]
+        );
+    }
+
+    delete[] buffer;
 }

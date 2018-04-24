@@ -8,29 +8,18 @@ FlashReader::FlashReader() {
     this->connected = false;
 }
 
-uint8_t FlashReader::read(uint32_t *destination, const uint8_t words) {
+FlashReader::~FlashReader() {
+    if (device.is_open()) {
+        device.close();
+    }
+}
+
+void FlashReader::read(char *destination, const uint16_t bytes) {
     if (!connected) {
-        return 0;
+        return;
     }
 
-    // wordSize could be a global constant
-    uint8_t wordSize = 4;
-
-    auto *word = new uint8_t [wordSize];
-    uint8_t readBytes = 0;
-
-    for (uint8_t i = 0; i < words; i++) {
-        device.read((char*)word, wordSize);
-        if( device.eof() ) {
-            break;
-        }
-        readBytes += 4;
-        *(destination + i) = (word[0] << 24) + (word[1] << 16) + (word[2] << 8) + word[3];
-    }
-
-    delete[] word;
-
-    return readBytes;
+    device.read(destination, bytes);
 }
 
 void FlashReader::connectToDevice(const std::string &devicePath) {
@@ -55,4 +44,14 @@ void FlashReader::disconnectFromDevice() {
 
 bool FlashReader::isConnected() const {
     return connected;
+}
+
+uint16_t FlashReader::getFileSize() {
+    if (connected) {
+        device.seekg (0, std::ios::end);
+        auto size = static_cast<uint16_t>(device.tellg());
+        device.seekg (0, std::ios::beg);
+        return size;
+    }
+    return 0;
 }
