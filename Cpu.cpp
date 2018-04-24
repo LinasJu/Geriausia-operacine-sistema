@@ -266,3 +266,8 @@ uint8_t Cpu::getSI(){
     return this->SI;
 }
 
+
+void Cpu::clearSF()
+{
+    this->SF = 0;
+}

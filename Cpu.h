@@ -104,6 +104,8 @@ public:
     bool getSiF();
     bool getOF();
 
+    void clearSF();
+
     uint8_t getPID();
 
     uint8_t getMODE();
