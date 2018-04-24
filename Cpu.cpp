@@ -174,6 +174,12 @@ void Cpu::setPI(uint8_t){
     this->TI = PLR;
 }
 
+/**
+ * SI = 1 PRINTS
+ * SI = 2 PRINTN
+ * SI = 3 READ
+ * SI = 4 HALT
+*/
 void Cpu::setSI(uint8_t){
     this->SI = SI;
 }
