@@ -33,7 +33,8 @@ SOURCES += \
     memoryblock.cpp \
     printer.cpp \
     virtualmachine.cpp \
-    vm.cpp
+    vm.cpp \
+    Cpu.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -47,7 +48,8 @@ HEADERS += \
     outputdevice.h \
     printer.h \
     virtualmachine.h \
-    vm.h
+    vm.h \
+    Cpu.h
 
 FORMS += \
         mainwindow.ui
