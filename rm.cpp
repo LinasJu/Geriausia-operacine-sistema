@@ -17,9 +17,11 @@ void RM::addVM(){
 }
 bool RM::newTable()
 {
-    if(cp->getPC()==16){
+
+    if(cp->getPC()==15){
         return false;
     }
+    this->cp->setPC2(this->cp->getPC2()+1);
     srand(time(0));
     uint16_t r;
     uint16_t address;
@@ -44,18 +46,13 @@ bool RM::isTaken(uint32_t block, uint8_t curr)
 }
 void RM::initPageTable(){
     for(int i = 0 ; i<16;i++){
-        MemoryBlock *memory=new MemoryBlock();
         for(int j = 0;j<16;j++){
-            memory->set(j,0);
+            this->mem->set(i*16+j,0);
         }
-        this->mem->setMemoryBlock(memory,i);
     }
 }
-void RM::inputInterrupt(){
-
-}
-void RM::outputInterrupt(){
-
+void RM::inputOtputInterrupt(){
+    this->cp->setIOI(0);
 }
 void RM::timerInterrupt(){
     this->cp->setTI(10);
@@ -89,6 +86,7 @@ void RM::supervisorInterrupt(){
     //READ
     }
     else{
+        if(vms[this->cp->getPC2()-1]!=NULL)
         delete vms[this->cp->getPC2()-1];
     }
 
@@ -102,4 +100,29 @@ int RM::getStackPosition(){
 }
 void RM::insertFlash(std::string path){
     flash->connectToDevice(path);
+}
+VM RM::getNext(){//sets current VM and returns it
+    if((this->cp->getPC2()-1)>1){
+    this->current=this->vms[this->cp->getPC2()-1];}
+    return current;
+}
+void RM::next(){
+    current->next();
+    if(this->test()){
+        if(this->cp->getPI()){
+            this->programInterrupt();
+        }
+        if(this->cp->getSI()){
+            this->supervisorInterrupt();
+        }
+        if(this->cp->getTI()<0){
+            this->timerInterrupt();
+        }
+        if(this->cp->getIOI()){
+            this->inputOutputInterrupt();
+        }
+    }
+}
+bool RM::test(){
+    return ((this->cp->getPI() + this->cp->getIOI() + this->cp->getSI()) || this->cp->getTI()<=0);
 }

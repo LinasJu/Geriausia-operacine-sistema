@@ -37,6 +37,11 @@ private:
     void updateGUI();
     int getStackPosition();
     void insertFlash(std::string path);
+    VM getNext();
+    VM *current;
+    void next();
+    void run();
+    bool test();
 
 };
 
