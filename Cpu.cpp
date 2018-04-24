@@ -182,7 +182,7 @@ uint8_t Cpu::getPC2(){
 }
 
 uint8_t Cpu::getPC1(){
-    return (this->PC & 0xFF);
+    return uint8_t(this->PC & 0x00FF);
 }
 
 uint16_t Cpu::getSP(){
