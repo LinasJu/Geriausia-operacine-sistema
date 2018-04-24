@@ -2,8 +2,10 @@
 
 RM::RM()
 {
+    printer = new Printer();
     cp = new Cpu();
     mem=new Memory();
+    flash= new FlashReader();
     this->initPageTable();
     this->newTable();//testing
 }
@@ -49,16 +51,55 @@ void RM::initPageTable(){
         this->mem->setMemoryBlock(memory,i);
     }
 }
-void RM::inputInterrupt(){}
+void RM::inputInterrupt(){
+
+}
 void RM::outputInterrupt(){
-//printer
+
 }
 void RM::timerInterrupt(){
     this->cp->setTI(10);
 }
 void RM::programInterrupt(){
-    //vm.stop();
+    delete vms[this->cp->getPC2()-1];
+    if(this->cp->getPI()==1){
+        w->appendOutput("Invalid address");}
+    else if(this->cp->getPI()==2){
+        w->appendOutput("Invalid operation code");
+    }
+    else if(this->cp->getPI()==3){
+        w->appendOutput("Invalid assignment");
+    }
+    else{
+        w->appendOutput("Overflow");
+    }
+    this->cp->setPI(0);
+
 }
 void RM::supervisorInterrupt(){
+    if(this->cp->getSI()==1){
+        this->printer->prints(this->mem->get(getStackPosition()),this->w);
+        this->cp->setSI(0);
+    }
+    else if(this->cp->getSI()==2){
+        this->printer->print(this->mem->get(getStackPosition()),this->w);
+        this->cp->setSI(0);
+    }
+    else if(this->cp->getSI()==3){
+    //READ
+    }
+    else{
+        delete vms[this->cp->getPC2()-1];
+    }
 
+}
+
+void RM::initWindow(MainWindow &w){
+    this->w=&w;
+}
+int RM::getStackPosition(){
+    return (mem->getMemoryBlock((this->cp->getSP2())).get(((this->cp->getSP1() & 0xF0) >>4) ))*16+(this->cp->getSP1() & 0x0F);
+}
+void RM::insertFlash(std::string path){
+    flash->connectToDevice(path);
 }

@@ -9,11 +9,15 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+class MainWindow;
 
 class Printer: public OutputDevice {
 public:
     void print(const uint32_t *source, uint8_t words) override;
     void print(const uint32_t *source, uint8_t words,MainWindow *w);
+    void print(const uint32_t source,MainWindow *w);
+    void prints(const uint32_t *source, uint8_t words,MainWindow *w);
+    void prints(const uint32_t source,MainWindow *w);
 };
 
 
