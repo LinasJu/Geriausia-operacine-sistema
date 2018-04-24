@@ -1,6 +1,7 @@
 #ifndef VM_H
 #define VM_H
 
+#include "memoryblock.h"
 
 class VM
 {
