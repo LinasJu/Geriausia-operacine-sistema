@@ -2,10 +2,22 @@
 #define VM_H
 
 #include "memoryblock.h"
+#include "vm.h"
+#include "Cpu.h"
 
 class VM
 {
-    VM(MemoryBlock* memory);
+    VM(MemoryBlock* memory, Cpu* cpu);
+
+    void next();
+
+    void run();
+
+    uint32_t get_from_stack(uint8_t address);
+    void set_to_stack(uint8_t address, uint32_t value);
+
+    uint32_t get_from_memory(uint8_t address);
+    void set_to_memory(uint8_t address, uint32_t value);
 
     void add();
     void sub();
@@ -14,15 +26,15 @@ class VM
 
     void cmp();
 
-    void ld(uint16_t address);
-    void pt(uint16_t address);
-    void ps(uint16_t value);
+    void ld(uint8_t address);
+    void pt(uint8_t address);
+    void ps(uint8_t value);
 
-    void jp(uint16_t address);
-    void je(uint16_t address);
-    void jn(uint16_t address);
-    void jl(uint16_t address);
-    void jg(uint16_t address);
+    void jp(uint8_t address);
+    void je(uint8_t address);
+    void jn(uint8_t address);
+    void jl(uint8_t address);
+    void jg(uint8_t address);
 
     void setc();
     void loop(uint16_t address);
@@ -41,6 +53,8 @@ private:
     uint16_t* SP;
     uint8_t* PID;
     uint8_t* CX;
+
+    Cpu* cpu;
 
     MemoryBlock* memory;
 };
