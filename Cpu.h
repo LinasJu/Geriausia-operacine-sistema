@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <iostream>
-#include "vMemory.h"
 
 class Cpu {
 private:

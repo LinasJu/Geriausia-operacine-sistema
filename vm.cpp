@@ -162,7 +162,7 @@ void VM::sub()
     }
 
     if(result > 0xFFFFFFFF){
-        cpu->setCR(true);
+        cpu->setCF(true);
     }
 
     if( !cpu->getSiF() && (a < 0x7FFFFFFF) && (b > 0x7FFFFFFF) ){
@@ -261,7 +261,7 @@ void VM::cmp()
     }
 
     if(result > 0xFFFFFFFF){
-        cpu->setCR(true);
+        cpu->setCF(true);
     }
 
     if( !cpu->getSiF() && (a < 0x7FFFFFFF) && (b > 0x7FFFFFFF) ){
@@ -282,7 +282,7 @@ void VM::ld(uint8_t address)
 void VM::pt(uint8_t address)
 {
     uint32_t value = get_from_stack(*SP);
-    set_to_memory(adress, value);
+    set_to_memory(address, value);
     *SP--;
 }
 
@@ -294,34 +294,34 @@ void VM::ps(uint8_t value)
 
 void VM::jp(uint8_t address)
 {
-    *PC = adrress;
+    *PC = address;
 }
 
 void VM::je(uint8_t address)
 {
     if(cpu->getZF()){
-        *PC = adrress;
+        *PC = address;
     }
 }
 
 void VM::jn(uint8_t address)
 {
     if(!cpu->getZF()){
-        *PC = adrress;
+        *PC = address;
     }
 }
 
 void VM::jl(uint8_t address)
 {
     if(cpu->getSiF() == !cpu->getOF()){
-        *PC = adrress;
+        *PC = address;
     }
 }
 
 void VM::jg(uint8_t address)
 {
     if(cpu->getSiF() == cpu->getOF()){
-        *PC = adrress;
+        *PC = address;
     }
 }
 

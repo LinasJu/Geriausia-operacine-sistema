@@ -37,7 +37,7 @@ class VM
     void jg(uint8_t address);
 
     void setc();
-    void loop(uint16_t address);
+    void loop(uint8_t address);
 
     void fork();
     void isp();
