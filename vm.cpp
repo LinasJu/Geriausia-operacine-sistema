@@ -8,32 +8,32 @@ VM::VM(MemoryBlock memory[16], Cpu* cpu)
 
 void VM::next()
 {
-    uint32_t cmd = get_from_memory(*PC);
+    uint32_t cmd = get_from_memory(cpu->getPC1());
 
     switch (cmd) {
     case ('A' << 24) + ('D' << 16) + ('D' << 8):
         add();
-        *PC++;
+        cpu->incPC();
         break;
     case ('S' << 24) + ('U' << 16) + ('B' << 8):
         sub();
-        *PC++;
+        cpu->incPC();
         break;
     case ('M' << 24) + ('U' << 16) + ('L' << 8):
         mul();
-        *PC++;
+        cpu->incPC();
         break;
     case ('D' << 24) + ('I' << 16) + ('V' << 8):
         div();
-        *PC++;
+        cpu->incPC();
         break;
     case ('C' << 24) + ('M' << 16) + ('P' << 8):
         cmp();
-        *PC++;
+        cpu->incPC();
         break;
     case ('S' << 24) + ('E' << 16) + ('T' << 8) + 'C':
         setc();
-        *PC++;
+        cpu->incPC();
         break;
     default:
         break;
@@ -41,15 +41,15 @@ void VM::next()
     switch (cmd & 0xFF00 >> 16) {
     case ('L' << 8) + 'D':
         ld((uint8_t)cmd&0x00FF);
-        *PC++;
+        cpu->incPC();
         break;
     case ('P' << 8) + 'T':
         pt((uint8_t)cmd&0x00FF);
-        *PC++;
+        cpu->incPC();
         break;
     case ('P' << 8) + 'S':
         ps((uint8_t)cmd&0x00FF);
-        *PC++;
+        cpu->incPC();
         break;
     case ('J' << 8) + 'P':
         jp((uint8_t)cmd&0x00FF);
@@ -59,7 +59,6 @@ void VM::next()
         break;
     case ('J' << 8) + 'N':
         jn((uint8_t)cmd&0x00FF);
-        *PC++;
         break;
     case ('J' << 8) + 'L':
         jl((uint8_t)cmd&0x00FF);
@@ -112,8 +111,8 @@ void VM::set_to_memory(uint8_t address, uint32_t value)
 
 void VM::add()
 {
-    uint32_t a = get_from_stack(*SP - 1);
-    uint32_t b = get_from_stack(*SP);
+    uint32_t a = get_from_stack(cpu->getSP1minus1());
+    uint32_t b = get_from_stack(cpu->getSP1());
 
     cpu->clearSF();
 
@@ -141,13 +140,13 @@ void VM::add()
 
     set_to_stack(*SP - 1, (uint32_t)(result&0xFFFFFFFF));
 
-    *SP--;
+    cpu->decSP();
 }
 
 void VM::sub()
 {
-    uint32_t a = get_from_stack(*SP - 1);
-    uint32_t b = get_from_stack(*SP);
+    uint32_t a = get_from_stack(cpu->getSP1minus1());
+    uint32_t b = get_from_stack(cpu->getSP1());
 
     cpu->clearSF();
 
@@ -172,15 +171,15 @@ void VM::sub()
         cpu->setOF(true);
     }
 
-    set_to_stack(*SP - 1, (uint32_t)(result&0xFFFFFFFF));
+    set_to_stack(cpu->getSP1minus1(), (uint32_t)(result&0xFFFFFFFF));
 
-    *SP--;
+    cpu->decSP();
 }
 
 void VM::mul()
 {
-    uint32_t a = get_from_stack(*SP - 1);
-    uint32_t b = get_from_stack(*SP);
+    uint32_t a = get_from_stack(cpu->getSP1minus1());
+    uint32_t b = get_from_stack(cpu->getSP1());
 
     cpu->clearSF();
 
@@ -208,15 +207,15 @@ void VM::mul()
         cpu->setOF(true);
     }
 
-    set_to_stack(*SP - 1, (uint32_t)(result&0xFFFFFFFF));
+    set_to_stack(cpu->getSP1minus1(), (uint32_t)(result&0xFFFFFFFF));
 
-    *SP--;
+    cpu->decSP();
 }
 
 void VM::div()
 {
-    uint32_t a = get_from_stack(*SP - 1);
-    uint32_t b = get_from_stack(*SP);
+    uint32_t a = get_from_stack(cpu->getSP1minus1());
+    uint32_t b = get_from_stack(cpu->getSP1());
 
     uint64_t result = (uint64_t)a / (uint64_t)b;
 
@@ -238,15 +237,15 @@ void VM::div()
         cpu->setCF(true);
     }
 
-    set_to_stack(*SP - 1, (uint32_t)(result&0xFFFFFFFF));
+    set_to_stack(cpu->getSP1minus1(), (uint32_t)(result&0xFFFFFFFF));
 
-    *SP--;
+    cpu->decSP();
 }
 
 void VM::cmp()
 {
-    uint32_t a = get_from_stack(*SP - 1);
-    uint32_t b = get_from_stack(*SP);
+    uint32_t a = get_from_stack(cpu->getSP1minus1());
+    uint32_t b = get_from_stack(cpu->getSP1());
 
     cpu->clearSF();
 
@@ -276,52 +275,52 @@ void VM::ld(uint8_t address)
 {
     uint32_t value = get_from_memory(address);
     set_to_stack(*SP+1, value);
-    *SP++;
+    cpu->incSP();
 }
 
 void VM::pt(uint8_t address)
 {
     uint32_t value = get_from_stack(*SP);
     set_to_memory(address, value);
-    *SP--;
+    cpu->incSP();
 }
 
 void VM::ps(uint8_t value)
 {
     set_to_stack(*SP+1, value);
-    *SP++;
+    cpu->incSP();
 }
 
 void VM::jp(uint8_t address)
 {
-    *PC = address;
+    cpu->setPC1(address);
 }
 
 void VM::je(uint8_t address)
 {
     if(cpu->getZF()){
-        *PC = address;
+        cpu->setPC1(address);
     }
 }
 
 void VM::jn(uint8_t address)
 {
     if(!cpu->getZF()){
-        *PC = address;
+        cpu->setPC1(address);
     }
 }
 
 void VM::jl(uint8_t address)
 {
     if(cpu->getSiF() == !cpu->getOF()){
-        *PC = address;
+        cpu->setPC1(address);
     }
 }
 
 void VM::jg(uint8_t address)
 {
     if(cpu->getSiF() == cpu->getOF()){
-        *PC = address;
+        cpu->setPC1(address);
     }
 }
 
@@ -335,10 +334,10 @@ void VM::loop(uint8_t address)
 {
     *CX--;
     if(*CX > 0){
-        *PC = address;
+        cpu->setPC1(address);
     }
     else{
-        *PC += 1;
+        cpu->incPC();
     }
 }
 
