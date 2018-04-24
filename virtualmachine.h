@@ -44,6 +44,7 @@ private:
     uint16_t* SP;
     uint8_t* PID;
     uint8_t* CX;
+    uint8_t* SF;
 
     MemoryBlock* memory;
 };

@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <iostream>
-#include "vMemory.h"
 
 class Cpu {
 private:
@@ -103,6 +102,8 @@ public:
     bool getCF();
     bool getSiF();
     bool getOF();
+
+    void clearSF();
 
     uint8_t getPID();
 
