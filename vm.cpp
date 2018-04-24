@@ -89,6 +89,28 @@ void VM::run()
     }
 }
 
+void VM::save()
+{
+    if(temp != NULL){
+        delete temp;
+    }
+    temp = new Temp();
+    temp->CX = *CX;
+    temp->PC = *PC;
+    temp->PID = *PID;
+    temp->SP = *SP;
+}
+
+void VM::load()
+{
+    if(temp != NULL){
+        *CX = temp->CX;
+        *PC = temp->PC;
+        *PID = temp->PID;
+        *SP = temp->SP;
+    }
+}
+
 uint32_t VM::get_from_stack(uint8_t address)
 {
     uint8_t first = ((address & 0xF0) + 0xE0) >> 4;
@@ -288,7 +310,7 @@ void VM::ld(uint8_t address)
 
 void VM::pt(uint8_t address)
 {
-    uint32_t value = get_from_stack(*SP);
+    uint32_t value = get_from_stack(cpu->getSP1());
     set_to_memory(address, value);
     cpu->incSP();
 }
@@ -334,7 +356,7 @@ void VM::jg(uint8_t address)
 
 void VM::setc()
 {
-    uint32_t value = get_from_stack(*PC);
+    uint32_t value = get_from_stack(cpu->getSP1());
     *CX = (uint8_t)value;
 }
 

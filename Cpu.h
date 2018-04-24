@@ -14,6 +14,7 @@ private:
     uint16_t PC;
     uint16_t SP;
     uint16_t SM;
+    uint8_t CX;
     uint8_t CH1;
     uint8_t CH2;
     uint8_t CH3;
