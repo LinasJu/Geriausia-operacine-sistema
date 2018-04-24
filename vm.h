@@ -5,6 +5,13 @@
 #include "vm.h"
 #include "Cpu.h"
 
+struct Temp{
+    uint16_t PC;
+    uint16_t SP;
+    uint8_t PID;
+    uint8_t CX;
+};
+
 class VM
 {
     VM(MemoryBlock* memory, Cpu* cpu);
@@ -12,6 +19,10 @@ class VM
     void next();
 
     void run();
+
+    void save();
+
+    void load();
 
     uint32_t get_from_stack(uint8_t address);
     void set_to_stack(uint8_t address, uint32_t value);
@@ -57,6 +68,8 @@ private:
     Cpu* cpu;
 
     MemoryBlock* memory;
+
+    Temp* temp = NULL;
 };
 
 #endif // VM_H
