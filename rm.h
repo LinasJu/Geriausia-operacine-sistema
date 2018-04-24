@@ -1,30 +1,30 @@
 #ifndef RM_H
 #define RM_H
 #include "memory.h"
+//#include "virtualmachine.h"
 #include <cstdint>
+#include <ctime>
+#include <cstdlib>
+#include "cpu.h"
 
 
 class RM
 {
 public:
     RM();
+    Memory *mem;
+    void addVM();
+    bool newTable();
+    Cpu *cp;
 private:
-    uint32_t PLR;
-    uint16_t PC;
-    uint16_t SP;
-    uint16_t SM;
-    uint8_t CH1;
-    uint8_t CH2;
-    uint8_t CH3;
-    uint8_t CH4;
-    uint8_t IOI;
-    uint8_t SF;
-    uint8_t PID;
-    uint8_t MODE;
-    uint8_t TI;
-    uint8_t PI;
-    uint8_t SI;
-    Memory mem;
+    bool isTaken(uint32_t block, uint8_t curr);
+    void initPageTable();
+    void inputInterrupt();
+    void outputInterrupt();
+    void timerInterrupt();
+    void supervisorInterrupt();
+    void programInterrupt();
+
 
 };
 
