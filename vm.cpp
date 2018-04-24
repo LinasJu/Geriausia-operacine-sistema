@@ -35,6 +35,14 @@ void VM::next()
         setc();
         cpu->incPC();
         break;
+    case ('P' << 24) + ('R' << 16) + ('T' << 8) + 'N':
+        prtn();
+        cpu->incPC();
+        break;
+    case ('P' << 24) + ('R' << 16) + ('T' << 8) + 'S':
+        prts();
+        cpu->incPC();
+        break;
     default:
         break;
     }
@@ -368,10 +376,10 @@ void VM::stop()
 
 void VM::prts()
 {
-
+    cpu->setSI(1);
 }
 
 void VM::prtn()
 {
-
+    cpu->setSI(2);
 }
