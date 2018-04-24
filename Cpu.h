@@ -41,9 +41,14 @@ public:
     void setPC1(uint8_t);
     void setPC2(uint8_t);
 
+    void incPC();
+
     void setSP(uint16_t);
     void setSP1(uint8_t);
     void setSP2(uint8_t);
+
+    void decSP();
+    void incSP();
 
     void setSM(uint16_t);
     void setSM1(uint8_t);
@@ -80,11 +85,14 @@ public:
     uint8_t getPLR4();
 
     uint16_t getPC();
+
     uint8_t getPC1();
     uint8_t getPC2();
 
     uint16_t getSP();
     uint8_t getSP1();
+    uint8_t getSP1plus1();
+    uint8_t getSP1minus1();
     uint8_t getSP2();
 
     uint16_t getSM();

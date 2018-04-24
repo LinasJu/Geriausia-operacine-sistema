@@ -48,11 +48,22 @@ void Cpu::setPC(uint16_t){
 }
 
 void Cpu::setPC1(uint8_t byte){
+    if(byte >= 0x6F){
+        PI = 1;
+    }
     this->PC = this->PC & 0xFFFFFF00 | byte;
 }
 
 void Cpu::setPC2(uint8_t byte){
     this->PC = this->PC & 0xFFFF00FF | (uint16_t(byte) << 8);
+}
+
+void Cpu::incPC()
+{
+    PC++;
+    if(getPC1() > 0x6F){
+        PI = 1;
+    }
 }
 
 void Cpu::setSP(uint16_t){
@@ -65,6 +76,22 @@ void Cpu::setSP1(uint8_t byte){
 
 void Cpu::setSP2(uint8_t byte){
     this->SP = this->SP & 0xFFFF00FF | (uint16_t(byte) << 8);
+}
+
+void Cpu::decSP()
+{
+    SP--;
+    if(SP < 0){
+        PI = 1;
+    }
+}
+
+void Cpu::incSP()
+{
+    SP++;
+    if(getSP1() == 0){
+        PI = 4;
+    }
 }
 
 void Cpu::setSM(uint16_t){
@@ -190,7 +217,23 @@ uint16_t Cpu::getSP(){
 }
 
 uint8_t Cpu::getSP1(){
-    return (this->SP & 0xFF);
+    return uint8_t(this->SP & 0x00FF);
+}
+
+uint8_t Cpu::getSP1plus1()
+{
+    if(getSP1() + 1 > 255){
+        PI = 1;
+    }
+    return uint8_t(getSP1() + 1 & 0x00FF);
+}
+
+uint8_t Cpu::getSP1minus1()
+{
+    if(getSP1() - 1 < 0){
+        PI = 1;
+    }
+    return uint8_t(getSP1() - 1 & 0x00FF);
 }
 
 uint8_t Cpu::getSP2(){
