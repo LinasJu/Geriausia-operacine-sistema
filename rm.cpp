@@ -20,9 +20,8 @@ RM::RM()
         vmmemory[i]=mem->getMemoryBlockAddress(block);
     }
     }
+    vmmemory[0]->set(0,0x48414C54);
     current = new VM(vmmemory,cp);
-    vmmemory;
-    5+3;
 }
 
 RM::~RM() {
@@ -112,7 +111,7 @@ void RM::supervisorInterrupt(){
         this->cp->setSI(0);
     //READ
     }
-    else if(this->cp->getSI()==4){
+    else if(this->cp->getSI()==5){
         this->lightbulb->print(this->mem->get(getStackPosition()));
         this->cp->setSP1(this->cp->getSP1minus1());
         this->cp->setSI(0);
@@ -146,8 +145,9 @@ void RM::next(){
     if(this->cp->getMODE()==0){
     current->next();
     if(this->test()){
+//       this->w->appendOutput("OK");
         this->cp->setMODE(1);
-        current->save();
+//        current->save();
     }
     }
     else{
@@ -165,9 +165,10 @@ void RM::next(){
             this->inputOutputInterrupt();
         }
         this->cp->setMODE(0);
-        if(current!=NULL)
-        current->load();
+//        if(current!=NULL)
+//        current->load();
     }
+    this->w->update();
 }
 bool RM::test(){
     return ((this->cp->getPI() + this->cp->getIOI() + this->cp->getSI()) || this->cp->getTI()<=0);

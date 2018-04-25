@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initTable();
     initRealMemoryTable();
     this->ui->disconnectButton->setEnabled(false);
-    this->ui->stepButton->setEnabled(false);
+    //this->ui->stepButton->setEnabled(false);
     this->ui->runButton->setEnabled(false);
     this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
 

@@ -43,7 +43,7 @@ void Cpu::setPLR4(uint8_t byte){
     this->PLR = this->PLR & 0x00FFFFFF | (uint16_t(byte) << 24);
 }
 
-void Cpu::setPC(uint16_t){
+void Cpu::setPC(uint16_t PC){
     this->PC = PC;
 }
 
@@ -66,7 +66,7 @@ void Cpu::incPC()
     }
 }
 
-void Cpu::setSP(uint16_t){
+void Cpu::setSP(uint16_t SP){
     this->SP = SP;
 }
 
@@ -94,7 +94,7 @@ void Cpu::incSP()
     }
 }
 
-void Cpu::setSM(uint16_t){
+void Cpu::setSM(uint16_t SM){
     this->SM = SM;
 }
 
@@ -106,23 +106,23 @@ void Cpu::setSM2(uint8_t byte){
     this->SM = this->SM & 0xFFFF00FF | (uint16_t(byte) << 8);
 }
 
-void Cpu::setCH1(uint16_t){
+void Cpu::setCH1(uint8_t CH1){
     this->CH1 = CH1;
 }
 
-void Cpu::setCH2(uint8_t){
+void Cpu::setCH2(uint8_t CH2){
     this->CH2 = CH2;
 }
 
-void Cpu::setCH3(uint8_t){
+void Cpu::setCH3(uint8_t CH3){
     this->CH3 = CH3;
 }
 
-void Cpu::setIOI(uint8_t){
+void Cpu::setIOI(uint8_t IOI){
     this->IOI = IOI;
 }
 
-void Cpu::setSF(uint8_t){
+void Cpu::setSF(uint8_t SF){
     this->SF = SF;
 }
 
@@ -162,20 +162,20 @@ void Cpu::setOF(bool flag){
     }
 }
 
-void Cpu::setPID(uint8_t){
+void Cpu::setPID(uint8_t PID){
     this->PID = PID;
 }
 
-void Cpu::setMODE(uint8_t){
+void Cpu::setMODE(uint8_t MODE){
     this->MODE = MODE;
 }
 
-void Cpu::setTI(int8_t){
+void Cpu::setTI(int8_t TI){
     this->TI = TI;
 }
 
-void Cpu::setPI(uint8_t){
-    this->TI = PLR;
+void Cpu::setPI(uint8_t PI){
+    this->PI = PI;
 }
 
 /**
@@ -184,7 +184,7 @@ void Cpu::setPI(uint8_t){
  * SI = 3 READ
  * SI = 4 HALT
 */
-void Cpu::setSI(uint8_t){
+void Cpu::setSI(uint8_t SI){
     this->SI = SI;
 }
 

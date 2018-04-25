@@ -2,12 +2,7 @@
 
 VM::VM(MemoryBlock* memory[], Cpu* cpu)
 {
-//    MemoryBlock *a;
-//    for(int i=0;i<16;i++){
-//        a = &(this->memory[i]);
-//        a = (memory+i);
 
-//    }
     std::copy(memory, memory+16, this->memory);
     this->cpu = cpu;
 }
@@ -47,6 +42,10 @@ void VM::next()
         break;
     case ('P' << 24) + ('R' << 16) + ('T' << 8) + 'S':
         prts();
+        cpu->incPC();
+        break;
+    case ('H' << 24) + ('A' << 16) + ('L' << 8) + 'T':
+        halt();
         cpu->incPC();
         break;
     default:

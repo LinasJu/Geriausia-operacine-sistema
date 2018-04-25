@@ -55,7 +55,7 @@ public:
     void setSM1(uint8_t);
     void setSM2(uint8_t);
 
-    void setCH1(uint16_t);
+    void setCH1(uint8_t);
     void setCH2(uint8_t);
     void setCH3(uint8_t);
 
