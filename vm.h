@@ -15,7 +15,7 @@ struct Temp{
 class VM
 {
     VM(MemoryBlock* memory, Cpu* cpu);
-
+    friend class RM;
     void next();
 
     void run();
