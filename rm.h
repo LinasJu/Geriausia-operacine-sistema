@@ -10,6 +10,7 @@
 #include "flashreader.h"
 #include "lightbulb.h"
 #include "mainwindow.h"
+#include "parsed_program.hs"
 #include <QTableWidget>
 class MainWindow;
 class Printer;
@@ -31,6 +32,8 @@ private:
     Cpu *cp;
     uint32_t *supervisorMemory = nullptr;
     uint16_t supervisorSize = 0;
+    ParsedProgram *parseProgram();
+
 
     bool isTaken(uint32_t block, uint8_t curr);
     void initWindow(MainWindow &w);

@@ -1,4 +1,5 @@
 #include "rm.h"
+#include "parser_process.h"
 
 RM::RM()
 {
@@ -207,12 +208,27 @@ void RM::loadFlashToSupervisorMemory() {
     supervisorMemory = new uint32_t[supervisorSize];
     for (int i = 0; i < supervisorSize; i++) {
         supervisorMemory[i] = static_cast<uint32_t>(
-                (buffer[i] << 24) + (buffer[i + 1] << 16) + (buffer[i + 2] << 8) + buffer[i + 3]
+                (buffer[4*i] << 24) + (buffer[4*i + 1] << 16) + (buffer[4*i + 2] << 8) + buffer[4*i + 3]
         );
     }
 
     delete[] buffer;
 }
+
+ParsedProgram *RM::parseProgram() {
+    ParserProcess parser(supervisorMemory, supervisorSize);
+    parser.parse();
+
+    if (parser.isError()) {
+        // error
+        std::cout << parser.getParseLog() << std::endl;
+        return nullptr;
+    }
+    else {
+        return parser.getParsedProgram();
+    }
+}
+
 void RM::run(){
     while((vms[this->cp->getPC2()-1]!=NULL )){
         this->next();
