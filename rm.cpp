@@ -4,6 +4,7 @@ RM::RM()
 {
     printer = new Printer();
     cp = new Cpu();
+    lightbulb = new Lightbulb();
     mem=new Memory();
     flash= new FlashReader();
     this->initPageTable();
@@ -83,14 +84,25 @@ void RM::programInterrupt(){
 void RM::supervisorInterrupt(){
     if(this->cp->getSI()==1){
         this->printer->prints(this->mem->get(getStackPosition()),this->w);
+        this->cp->setSP1(this->cp->getSP1minus1());
         this->cp->setSI(0);
+        this->w->update();
     }
     else if(this->cp->getSI()==2){
         this->printer->print(this->mem->get(getStackPosition()),this->w);
+        this->cp->setSP1(this->cp->getSP1minus1());
         this->cp->setSI(0);
+        this->w->update();
     }
     else if(this->cp->getSI()==3){
+        this->cp->setSI(0);
     //READ
+    }
+    else if(this->cp->getSI()==4){
+        this->lightbulb->print(this->mem->get(getStackPosition()));
+        this->cp->setSP1(this->cp->getSP1minus1());
+        this->cp->setSI(0);
+        this->w->update();
     }
     else{
         if(vms[this->cp->getPC2()-1]!=NULL)
@@ -117,8 +129,15 @@ VM RM::getNext(){//sets current VM and returns it
     return *current;
 }
 void RM::next(){
+    if(this->cp->getMODE()==0){
     current->next();
     if(this->test()){
+        this->cp->setMODE(1);
+        current->save();
+    }
+    }
+    else{
+
         if(this->cp->getPI()){
             this->programInterrupt();
         }
@@ -131,6 +150,9 @@ void RM::next(){
         if(this->cp->getIOI()){
             this->inputOutputInterrupt();
         }
+        this->cp->setMODE(0);
+        if(current!=NULL)
+        current->load();
     }
 }
 bool RM::test(){

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <QPixmap>
 #include <iomanip>
 #include "rm.h"
 #include <QFileDialog>
@@ -29,17 +30,18 @@ public:
     void updateRealTable();
     friend class RM;
 private slots:
-     void on_pushButton_3_clicked();
 
      void on_pushButton_clicked();
 
-     void on_pushButton_2_clicked();
-
      void on_checkBox_clicked();
 
-     void on_pushButton_4_clicked();
-
      void on_runButton_clicked();
+
+     void on_connectButton_clicked();
+
+     void on_stepButton_clicked();
+
+     void on_disconnectButton_clicked();
 
 private:
      Ui::MainWindow *ui;

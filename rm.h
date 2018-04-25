@@ -8,6 +8,7 @@
 #include "cpu.h"
 #include "printer.h"
 #include "flashreader.h"
+#include "lightbulb.h"
 #include "mainwindow.h"
 #include <QTableWidget>
 class MainWindow;
@@ -24,6 +25,7 @@ private:
     MainWindow *w = NULL;
     Printer *printer;
     FlashReader *flash;
+    Lightbulb *lightbulb;
     VM *vms[15];
     Memory *mem;
     Cpu *cp;

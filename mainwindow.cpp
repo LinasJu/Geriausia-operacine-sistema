@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->ui->disconnectButton->setEnabled(false);
     this->ui->stepButton->setEnabled(false);
     this->ui->runButton->setEnabled(false);
+    this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
+
 //    addToTable(0,0,0x4b61726f);
 //    addToTable(0,1,0x6c697320);
 //    addToTable(0,2,0x79726120);
@@ -99,6 +101,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void MainWindow::update(){
+    if(this->realmachine->lightbulb->getState())
+        this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbON.png"));
+    else
+        this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
     this->updateRealTable();
     ui->lineEdit_22->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
     ui->lineEdit_21->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
@@ -164,9 +170,6 @@ void MainWindow::updateRealTable()
     }}
 }
 
-void MainWindow::on_pushButton_3_clicked()
-{
-}
 void MainWindow::appendOutput(std::string str){
     QString qs;
     qs=this->ui->textBrowser->toPlainText();
@@ -174,7 +177,7 @@ void MainWindow::appendOutput(std::string str){
     this->ui->textBrowser->setText(qs);
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_connectButton_clicked()
 {
     QString filename=QFileDialog::getOpenFileName(
                 this,
@@ -194,7 +197,7 @@ std::string MainWindow::intToHexStr(int a,int pos){
       return stream.str();
 }
 
-void MainWindow::on_pushButton_2_clicked()
+void MainWindow::on_disconnectButton_clicked()
 {
     this->ui->connectButton->setEnabled(true);
     this->ui->disconnectButton->setEnabled(false);
@@ -206,7 +209,7 @@ void MainWindow::on_checkBox_clicked()
     this->ui->checkBox->setChecked(!this->ui->checkBox->isChecked());
 }
 
-void MainWindow::on_pushButton_4_clicked()
+void MainWindow::on_stepButton_clicked()
 {
     if(this->realmachine->cp->getPC2()>0){
     this->realmachine->next();}
@@ -223,3 +226,11 @@ void MainWindow::changeStepButtonState(bool a){
     this->ui->stepButton->setEnabled(a);
 }
 
+void MainWindow::on_pushButton_clicked()
+{
+    if(this->realmachine->lightbulb->getState())
+    this->realmachine->lightbulb->print(0);
+    else
+        this->realmachine->lightbulb->print(1);
+    this->update();
+}
