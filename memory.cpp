@@ -18,7 +18,7 @@ QTextStream& qStdOut()
 
 uint32_t Memory::get(uint16_t address)
 {
-    uint8_t block = (address & 0xFFF0)>>4;
+    uint8_t block = (address & 0x0FF0)>>4;
     uint8_t cell = address & 0xF;
 
     return memory[block]->get(cell);
@@ -26,13 +26,18 @@ uint32_t Memory::get(uint16_t address)
 
 void Memory::set(uint16_t address, uint32_t value)
 {
-    uint8_t block = (address & 0xFFF0)>>4;
+    uint8_t block = (address & 0x0FF0)>>4;
     uint8_t cell = address & 0xF;
 
     memory[block]->set(cell, value);
 }
 MemoryBlock Memory::getMemoryBlock(uint8_t block){
     return *memory[block];
+}
+
+MemoryBlock *Memory::getMemoryBlockAddress(uint8_t block)
+{
+    return memory[block];
 }
 void Memory::setMemoryBlock(MemoryBlock *mem, int block){
     this->memory[block]=mem;

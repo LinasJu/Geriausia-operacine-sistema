@@ -59,6 +59,8 @@ public:
     void setCH2(uint8_t);
     void setCH3(uint8_t);
 
+    void setCX(uint8_t);
+
     void setIOI(uint8_t);
 
     void setSF(uint8_t);
@@ -99,6 +101,8 @@ public:
     uint16_t getSM();
     uint8_t getSM1();
     uint8_t getSM2();
+
+    uint8_t getCX();
 
     uint16_t getCH1();
     uint8_t getCH2();

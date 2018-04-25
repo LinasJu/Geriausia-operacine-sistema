@@ -106,10 +106,11 @@ void MainWindow::update(){
     else
         this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
     this->updateRealTable();
-    ui->lineEdit_22->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
-    ui->lineEdit_21->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
-    ui->lineEdit_23->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSP(),4)));
-//    ui->lineEdit_24->setText(QString::number( this->realmachine->cp.getCX() ));
+    ui->PCV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
+    ui->PIDV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
+    ui->SPV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSP(),4)));
+    ui->CXV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCX(),2)));
+    ui->CXR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCX(),2)));
     ui->CH1R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH1(),2)));
     ui->CH2R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH2(),2)));
     ui->CH3R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH3(),2)));
@@ -135,6 +136,21 @@ void MainWindow::update(){
              }
              else{
                  ui->tableVM->item(i, j)->setBackground(Qt::yellow);
+             }
+
+        }
+    }
+    for(uint8_t i = 0; i<16 ; i++){
+        int k = this->realmachine->mem->get((this->realmachine->cp->getPC2()-1)*16 +i);
+        for(uint8_t j = 0 ; j<16; j++){
+             if(i<6){
+                 ui->tableRM->item(k, j)->setBackground(Qt::blue);
+             }
+             else if(i<13){
+                 ui->tableRM->item(k, j)->setBackground(Qt::green);
+             }
+             else{
+                 ui->tableRM->item(k, j)->setBackground(Qt::yellow);
              }
 
         }

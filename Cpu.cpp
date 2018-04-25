@@ -134,6 +134,10 @@ void Cpu::setZF(bool flag){
     }
 }
 
+void Cpu::setCX(uint8_t cx){
+    this->CX=cx;
+}
+
 void Cpu::setCF(bool flag){
     if(flag) {
         this->SF |= (1u << 1);
@@ -257,7 +261,9 @@ uint8_t Cpu::getSM1(){
 uint8_t Cpu::getSM2(){
     return uint8_t((this->SP >> 8) & 0xFF);
 }
-
+uint8_t Cpu::getCX(){
+    return this->CX;
+}
 uint16_t Cpu::getCH1(){
     return this->CH1;
 }

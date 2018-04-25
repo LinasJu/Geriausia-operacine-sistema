@@ -9,6 +9,20 @@ RM::RM()
     flash= new FlashReader();
     this->initPageTable();
     this->newTable();//testing
+    MemoryBlock* vmmemory[16];
+    int table=(this->cp->getPC()&0xFF00)>>8;
+    if(table>0){
+    for(int i=0;i<16;i++){
+        int block=this->mem->get((table-1)*16+i);
+//        for(int j=0;j<16;j++){
+//            this->addToTable(i,j,this->mem->get(block*16+j));
+//        }
+        vmmemory[i]=mem->getMemoryBlockAddress(block);
+    }
+    }
+    current = new VM(vmmemory,cp);
+    vmmemory;
+    5+3;
 }
 
 RM::~RM() {

@@ -592,7 +592,7 @@
         <string>CX</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_21">
+      <widget class="QLineEdit" name="PIDV">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -614,7 +614,7 @@
         <bool>true</bool>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_22">
+      <widget class="QLineEdit" name="PCV">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -636,7 +636,7 @@
         <bool>true</bool>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_23">
+      <widget class="QLineEdit" name="SPV">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -658,7 +658,7 @@
         <bool>true</bool>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_24">
+      <widget class="QLineEdit" name="CXV">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -836,7 +836,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>0</x>
         <y>370</y>
-        <width>391</width>
+        <width>561</width>
         <height>151</height>
        </rect>
       </property>
@@ -898,8 +898,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>100</y>
+         <x>150</x>
+         <y>20</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -912,7 +912,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>150</x>
-         <y>20</y>
+         <y>40</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -925,7 +925,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>150</x>
-         <y>40</y>
+         <y>60</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -938,7 +938,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>150</x>
-         <y>60</y>
+         <y>80</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -950,8 +950,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_9">
        <property name="geometry">
         <rect>
-         <x>150</x>
-         <y>80</y>
+         <x>290</x>
+         <y>20</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -963,8 +963,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_10">
        <property name="geometry">
         <rect>
-         <x>150</x>
-         <y>100</y>
+         <x>290</x>
+         <y>40</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -977,7 +977,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>290</x>
-         <y>20</y>
+         <y>60</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -990,7 +990,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>290</x>
-         <y>40</y>
+         <y>80</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -1002,8 +1002,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_13">
        <property name="geometry">
         <rect>
-         <x>290</x>
-         <y>60</y>
+         <x>420</x>
+         <y>20</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -1015,8 +1015,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_14">
        <property name="geometry">
         <rect>
-         <x>290</x>
-         <y>80</y>
+         <x>420</x>
+         <y>40</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -1028,8 +1028,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="label_15">
        <property name="geometry">
         <rect>
-         <x>290</x>
-         <y>100</y>
+         <x>420</x>
+         <y>60</y>
          <width>31</width>
          <height>16</height>
         </rect>
@@ -1129,8 +1129,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLineEdit" name="PIDR">
        <property name="geometry">
         <rect>
-         <x>40</x>
-         <y>100</y>
+         <x>190</x>
+         <y>20</y>
          <width>60</width>
          <height>20</height>
         </rect>
@@ -1151,8 +1151,8 @@ p, li { white-space: pre-wrap; }
       <widget class="QLineEdit" name="PIR">
        <property name="geometry">
         <rect>
-         <x>190</x>
-         <y>80</y>
+         <x>330</x>
+         <y>20</y>
          <width>60</width>
          <height>20</height>
         </rect>
@@ -1174,7 +1174,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>190</x>
-         <y>60</y>
+         <y>80</y>
          <width>60</width>
          <height>20</height>
         </rect>
@@ -1196,7 +1196,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>190</x>
-         <y>40</y>
+         <y>60</y>
          <width>60</width>
          <height>20</height>
         </rect>
@@ -1218,7 +1218,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>190</x>
-         <y>20</y>
+         <y>40</y>
          <width>60</width>
          <height>20</height>
         </rect>
@@ -1237,72 +1237,6 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
       <widget class="QLineEdit" name="IOIR">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>100</y>
-         <width>60</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="CH3R">
-       <property name="geometry">
-        <rect>
-         <x>330</x>
-         <y>80</y>
-         <width>60</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="CH2R">
-       <property name="geometry">
-        <rect>
-         <x>330</x>
-         <y>60</y>
-         <width>60</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="CH1R">
        <property name="geometry">
         <rect>
          <x>330</x>
@@ -1324,11 +1258,77 @@ p, li { white-space: pre-wrap; }
         <bool>true</bool>
        </property>
       </widget>
-      <widget class="QLineEdit" name="CH4R">
+      <widget class="QLineEdit" name="CH3R">
+       <property name="geometry">
+        <rect>
+         <x>460</x>
+         <y>40</y>
+         <width>60</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="CH2R">
+       <property name="geometry">
+        <rect>
+         <x>460</x>
+         <y>20</y>
+         <width>60</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="CH1R">
        <property name="geometry">
         <rect>
          <x>330</x>
-         <y>100</y>
+         <y>80</y>
+         <width>60</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="CH4R">
+       <property name="geometry">
+        <rect>
+         <x>460</x>
+         <y>60</y>
          <width>60</width>
          <height>20</height>
         </rect>
@@ -1350,7 +1350,42 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>330</x>
-         <y>20</y>
+         <y>60</y>
+         <width>60</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_16">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>80</y>
+         <width>31</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>CX</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="CXR">
+       <property name="geometry">
+        <rect>
+         <x>460</x>
+         <y>80</y>
          <width>60</width>
          <height>20</height>
         </rect>

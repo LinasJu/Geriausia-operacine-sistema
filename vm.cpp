@@ -1,8 +1,14 @@
 #include "vm.h"
 
-VM::VM(MemoryBlock memory[16], Cpu* cpu)
+VM::VM(MemoryBlock* memory[], Cpu* cpu)
 {
-    this->memory = memory;
+//    MemoryBlock *a;
+//    for(int i=0;i<16;i++){
+//        a = &(this->memory[i]);
+//        a = (memory+i);
+
+//    }
+    std::copy(memory, memory+16, this->memory);
     this->cpu = cpu;
 }
 
@@ -115,28 +121,28 @@ uint32_t VM::get_from_stack(uint8_t address)
 {
     uint8_t first = ((address & 0xF0) + 0xE0) >> 4;
     uint8_t second = address & 0x0F;
-    return memory[first].get(second);
+    return memory[first]->get(second);
 }
 
 void VM::set_to_stack(uint8_t address, uint32_t value)
 {
     uint8_t first = ((address & 0xF0) + 0xE0) >> 4;
     uint8_t second = address & 0x0F;
-    memory[first].set(second, value);
+    memory[first]->set(second, value);
 }
 
 uint32_t VM::get_from_memory(uint8_t address)
 {
     uint8_t first = (address & 0xF0) >> 4;
     uint8_t second = address & 0x0F;
-    return memory[first].get(second);
+    return memory[first]->get(second);
 }
 
 void VM::set_to_memory(uint8_t address, uint32_t value)
 {
     uint8_t first = (address & 0xF0) >> 4;
     uint8_t second = address & 0x0F;
-    memory[first].set(second, value);
+    memory[first]->set(second, value);
 }
 
 void VM::add()
