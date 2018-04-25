@@ -8,6 +8,8 @@
 #include <sstream>
 #include <QPixmap>
 #include <iomanip>
+#include <QGraphicsRectItem>
+#include <QGraphicsScene>
 #include "rm.h"
 #include <QFileDialog>
 namespace Ui {
@@ -44,13 +46,16 @@ private slots:
      void on_disconnectButton_clicked();
 
 private:
+     QGraphicsScene *scene;
      Ui::MainWindow *ui;
+     QGraphicsRectItem *rect;
      RM* realmachine;
     void addToolTip(uint8_t row,uint8_t column, uint32_t item);
     void headerToolTip(uint8_t row);
     void initRealMemoryTable();
     void changeRunButtonState(bool a);
     void changeStepButtonState(bool a);
+    void changeColor(uint32_t);
 };
 
 #endif // MAINWINDOW_H

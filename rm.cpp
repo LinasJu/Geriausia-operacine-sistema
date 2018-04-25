@@ -21,6 +21,9 @@ RM::RM()
         vmmemory[i]=mem->getMemoryBlockAddress(block);
     }
     }
+    vmmemory[14]->set(1,0xFFFFFFFF);
+    this->cp->incSP();
+
     vmmemory[0]->set(0,0x48414C54);
     current = new VM(vmmemory,cp);
 }
@@ -132,7 +135,10 @@ void RM::initWindow(MainWindow &w){
     this->w=&w;
 }
 int RM::getStackPosition(){
-    return (mem->getMemoryBlock((this->cp->getSP2())).get(((this->cp->getSP1() & 0xF0) >>4) ))*16+(this->cp->getSP1() & 0x0F);
+    int page = mem->getMemoryBlock(this->cp->getPC2()-1 ).get(14 + ((this->cp->getSP1()&0xF0)>>4));
+    int cell =(this->cp->getSP1() )&0x0F;
+    int address=(page*16+cell);
+    return address;
 }
 void RM::insertFlash(std::string path){
     flash->connectToDevice(path);
@@ -146,7 +152,6 @@ void RM::next(){
     if(this->cp->getMODE()==0){
     current->next();
     if(this->test()){
-//       this->w->appendOutput("OK");
         this->cp->setMODE(1);
 //        current->save();
     }

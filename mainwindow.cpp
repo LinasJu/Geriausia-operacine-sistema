@@ -14,6 +14,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow::showMaximized();
     ui->tableVM->horizontalHeader()->setSectionResizeMode (QHeaderView::Fixed);
     ui->tableVM->verticalHeader()->setSectionResizeMode (QHeaderView::Fixed);
+    scene= new QGraphicsScene(this);
+    ui->gView->setScene(scene);
+    rect = new QGraphicsRectItem();
+    rect->setRect(0,0,100,100);
+    rect->setPen( QPen( Qt::black, 1 ) );
+    rect->setBrush( Qt::gray );
+    scene->addItem(rect);
     initTable();
     initRealMemoryTable();
     this->ui->disconnectButton->setEnabled(false);
@@ -105,6 +112,7 @@ void MainWindow::update(){
         this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbON.png"));
     else
         this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
+    this->changeColor(this->realmachine->lightbulb->getState());
     this->updateRealTable();
     ui->PCV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
     ui->PIDV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
@@ -128,10 +136,10 @@ void MainWindow::update(){
     int column;
     for(uint8_t i = 0; i<16 ; i++){
         for(uint8_t j = 0 ; j<16; j++){
-             if(i<6){
+             if(i<7){
                  ui->tableVM->item(i, j)->setBackground(Qt::blue);
              }
-             else if(i<13){
+             else if(i<14){
                  ui->tableVM->item(i, j)->setBackground(Qt::green);
              }
              else{
@@ -143,10 +151,10 @@ void MainWindow::update(){
     for(uint8_t i = 0; i<16 ; i++){
         int k = this->realmachine->mem->get((this->realmachine->cp->getPC2()-1)*16 +i);
         for(uint8_t j = 0 ; j<16; j++){
-             if(i<6){
+             if(i<7){
                  ui->tableRM->item(k, j)->setBackground(Qt::blue);
              }
-             else if(i<13){
+             else if(i<14){
                  ui->tableRM->item(k, j)->setBackground(Qt::green);
              }
              else{
@@ -158,7 +166,7 @@ void MainWindow::update(){
     row=this->realmachine->cp->getPC1()/16;
     column=this->realmachine->cp->getPC1()%16;
     ui->tableVM->item(row, column)->setBackground(Qt::red);
-    row=(this->realmachine->cp->getSP1()%256)/16 + 13;
+    row=(this->realmachine->cp->getSP1()%256)/16 + 14;
     column=this->realmachine->cp->getSP1()%16;
     ui->tableVM->item(row, column)->setBackground(Qt::red);
     int table=(realmachine->cp->getPC()&0xFF00)>>8;
@@ -249,4 +257,11 @@ void MainWindow::on_pushButton_clicked()
     else
         this->realmachine->lightbulb->print(1);
     this->update();
+    this->rect->setBrush(QBrush(QColor(100,100,100)));
+}
+void MainWindow::changeColor(uint32_t color){
+    int r=(color&0xFF000000)>>24;
+    int g=(color&0x00FF0000)>>16;
+    int b=(color&0x0000FF00)>>8;
+    this->rect->setBrush(QBrush(QColor(r,g,b)));
 }

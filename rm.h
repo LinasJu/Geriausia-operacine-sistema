@@ -10,7 +10,7 @@
 #include "flashreader.h"
 #include "lightbulb.h"
 #include "mainwindow.h"
-#include "parsed_program.hs"
+#include "parsed_program.h"
 #include <QTableWidget>
 class MainWindow;
 class Printer;
