@@ -35,12 +35,20 @@ private slots:
 
      void on_pushButton_2_clicked();
 
+     void on_checkBox_clicked();
+
+     void on_pushButton_4_clicked();
+
+     void on_runButton_clicked();
+
 private:
      Ui::MainWindow *ui;
      RM* realmachine;
     void addToolTip(uint8_t row,uint8_t column, uint32_t item);
     void headerToolTip(uint8_t row);
     void initRealMemoryTable();
+    void changeRunButtonState(bool a);
+    void changeStepButtonState(bool a);
 };
 
 #endif // MAINWINDOW_H

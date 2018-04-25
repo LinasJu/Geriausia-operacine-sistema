@@ -56,14 +56,15 @@ void RM::initPageTable(){
         }
     }
 }
-void RM::inputOtputInterrupt(){
+void RM::inputOutputInterrupt(){
     this->cp->setIOI(0);
 }
 void RM::timerInterrupt(){
     this->cp->setTI(10);
 }
 void RM::programInterrupt(){
-    delete vms[this->cp->getPC2()-1];
+    if(vms[this->cp->getPC2()-1]!=NULL ){
+    delete vms[this->cp->getPC2()-1];}
     if(this->cp->getPI()==1){
         w->appendOutput("Invalid address");}
     else if(this->cp->getPI()==2){
@@ -76,7 +77,8 @@ void RM::programInterrupt(){
         w->appendOutput("Overflow");
     }
     this->cp->setPI(0);
-
+    w->changeRunButtonState(false);
+    w->changeStepButtonState(false);
 }
 void RM::supervisorInterrupt(){
     if(this->cp->getSI()==1){
@@ -93,6 +95,9 @@ void RM::supervisorInterrupt(){
     else{
         if(vms[this->cp->getPC2()-1]!=NULL)
         delete vms[this->cp->getPC2()-1];
+        w->changeRunButtonState(false);
+        w->changeStepButtonState(false);
+
     }
 
 }
@@ -109,7 +114,7 @@ void RM::insertFlash(std::string path){
 VM RM::getNext(){//sets current VM and returns it
     if((this->cp->getPC2()-1)>1){
     this->current=this->vms[this->cp->getPC2()-1];}
-    return current;
+    return *current;
 }
 void RM::next(){
     current->next();
@@ -170,4 +175,9 @@ void RM::loadFlashToSupervisorMemory() {
     }
 
     delete[] buffer;
+}
+void RM::run(){
+    while((vms[this->cp->getPC2()-1]!=NULL )){
+        this->next();
+    }
 }

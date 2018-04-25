@@ -16,7 +16,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableVM->verticalHeader()->setSectionResizeMode (QHeaderView::Fixed);
     initTable();
     initRealMemoryTable();
-    this->ui->pushButton_2->setEnabled(false);
+    this->ui->disconnectButton->setEnabled(false);
+    this->ui->stepButton->setEnabled(false);
+    this->ui->runButton->setEnabled(false);
 //    addToTable(0,0,0x4b61726f);
 //    addToTable(0,1,0x6c697320);
 //    addToTable(0,2,0x79726120);
@@ -98,7 +100,7 @@ MainWindow::~MainWindow()
 }
 void MainWindow::update(){
     this->updateRealTable();
-    ui->lineEdit_22->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),8)));
+    ui->lineEdit_22->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
     ui->lineEdit_21->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
     ui->lineEdit_23->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSP(),4)));
 //    ui->lineEdit_24->setText(QString::number( this->realmachine->cp.getCX() ));
@@ -182,8 +184,8 @@ void MainWindow::on_pushButton_clicked()
                 );
     this->realmachine->insertFlash(filename.toStdString());
     this->ui->checkBox->setChecked(true);
-    this->ui->pushButton->setEnabled(false);
-    this->ui->pushButton_2->setEnabled(true);
+    this->ui->connectButton->setEnabled(false);
+    this->ui->disconnectButton->setEnabled(true);
 
 }
 std::string MainWindow::intToHexStr(int a,int pos){
@@ -194,7 +196,30 @@ std::string MainWindow::intToHexStr(int a,int pos){
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    this->ui->pushButton->setEnabled(true);
-    this->ui->pushButton_2->setEnabled(false);
+    this->ui->connectButton->setEnabled(true);
+    this->ui->disconnectButton->setEnabled(false);
     this->ui->checkBox->setChecked(false);
 }
+
+void MainWindow::on_checkBox_clicked()
+{
+    this->ui->checkBox->setChecked(!this->ui->checkBox->isChecked());
+}
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    if(this->realmachine->cp->getPC2()>0){
+    this->realmachine->next();}
+}
+
+void MainWindow::on_runButton_clicked()
+{
+    this->realmachine->run();
+}
+void MainWindow::changeRunButtonState(bool a){
+    this->ui->runButton->setEnabled(a);
+}
+void MainWindow::changeStepButtonState(bool a){
+    this->ui->stepButton->setEnabled(a);
+}
+

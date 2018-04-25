@@ -33,8 +33,7 @@ private:
     bool isTaken(uint32_t block, uint8_t curr);
     void initWindow(MainWindow &w);
     void initPageTable();
-    void inputInterrupt();
-    void outputInterrupt();
+    void inputOutputInterrupt();
     void timerInterrupt();
     void supervisorInterrupt();
     void programInterrupt();
