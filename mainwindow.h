@@ -30,6 +30,7 @@ public:
     std::string intToHexStr(int a,int pos);
     void update();
     void updateRealTable();
+    void resetRMcolor();
     friend class RM;
 private slots:
 
@@ -44,6 +45,8 @@ private slots:
      void on_stepButton_clicked();
 
      void on_disconnectButton_clicked();
+
+     void on_pushButton_2_clicked();
 
 private:
      QGraphicsScene *scene;
