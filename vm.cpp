@@ -5,6 +5,10 @@ VM::VM(MemoryBlock* memory[], Cpu* cpu)
 
     std::copy(memory, memory+16, this->memory);
     this->cpu = cpu;
+    this->CX = &this->cpu->CX;
+    this->PC = &this->cpu->PC;
+    this->SP = &this->cpu->SP;
+    this->PID = &this->cpu->PID;
 }
 
 void VM::next()
@@ -20,7 +24,7 @@ void VM::next()
         sub();
         cpu->incPC();
         break;
-    case ('M' << 24) + ('U' << 16) + ('L' << 8):
+    case ('M' << 24) + ('U' << 16) + ('L' << 8)+ ' ':
         mul();
         cpu->incPC();
         break;
@@ -51,7 +55,7 @@ void VM::next()
     default:
         break;
     }
-    switch (cmd & 0xFF00 >> 16) {
+    switch ((cmd & 0xFFFF0000 )>> 16) {
     case ('L' << 8) + 'D':
         ld((uint8_t)cmd&0x00FF);
         cpu->incPC();
@@ -242,7 +246,8 @@ void VM::mul()
         cpu->setOF(true);
     }
 
-    set_to_stack(cpu->getSP1minus1(), (uint32_t)(result&0xFFFFFFFF));
+
+    set_to_stack(*SP - 1, (uint32_t)(result & 0xFFFFFFFF));
 
     cpu->decSP();
 }

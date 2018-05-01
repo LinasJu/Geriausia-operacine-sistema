@@ -4,7 +4,7 @@
 #include "memoryblock.h"
 #include "vm.h"
 #include "Cpu.h"
-
+class Cpu;
 struct Temp{
     uint16_t PC;
     uint16_t SP;

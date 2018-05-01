@@ -27,7 +27,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->ui->stepButton->setEnabled(false);
     this->ui->runButton->setEnabled(false);
     this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
-
 //    addToTable(0,0,0x4b61726f);
 //    addToTable(0,1,0x6c697320);
 //    addToTable(0,2,0x79726120);
@@ -190,8 +189,17 @@ void MainWindow::updateRealTable()
     }
     if(this->realmachine->cp->getPC2()){
     for(int i = 0; i<16;i++){
-        ui->tableRM->item(((this->realmachine->cp->getPC()-1) &0xFF00)>>8,i)->setBackground(Qt::blue);
+        ui->tableRM->item(((this->realmachine->cp->getPC2()-1)),i)->setBackground(Qt::blue);
     }}
+}
+
+void MainWindow::resetRMcolor()
+{
+    for(int i = 0; i<16; i++){
+        for(int j=0;j<256;j++){
+         ui->tableRM->item(j,i)->setBackground(Qt::white);
+        }
+    }
 }
 
 void MainWindow::appendOutput(std::string str){
@@ -250,7 +258,7 @@ void MainWindow::changeStepButtonState(bool a){
     this->ui->stepButton->setEnabled(a);
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_pushButton_clicked()//button for testing purposes
 {
     if(this->realmachine->lightbulb->getState())
     this->realmachine->lightbulb->print(0);
@@ -258,10 +266,18 @@ void MainWindow::on_pushButton_clicked()
         this->realmachine->lightbulb->print(1);
     this->update();
     this->rect->setBrush(QBrush(QColor(100,100,100)));
+    this->resetRMcolor();
 }
 void MainWindow::changeColor(uint32_t color){
     int r=(color&0xFF000000)>>24;
     int g=(color&0x00FF0000)>>16;
     int b=(color&0x0000FF00)>>8;
     this->rect->setBrush(QBrush(QColor(r,g,b)));
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    realmachine->loadFlashToSupervisorMemory();
+    realmachine->parseProgram();
+    this->update();
 }

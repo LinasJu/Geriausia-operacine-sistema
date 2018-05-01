@@ -18,7 +18,7 @@ void ParserProcess::parse() {
 
     while (true) {
         std::string command = commandToString(source[current]);
-        if (command == "$AMJ") {
+        if (command.find("$AMJ") != std::string::npos) {
             if (currentState != State::NONE) {
                 currentState = State::ERROR;
                 break;
@@ -60,7 +60,7 @@ void ParserProcess::parse() {
 
             continue;
         }
-        else if (command == "$COD") {
+        else if (command.find("$COD") != std::string::npos) {
             if (currentState != State::AMJ) {
                 currentState = State::ERROR;
                 break;
@@ -86,7 +86,7 @@ void ParserProcess::parse() {
 
             continue;
         }
-        else if (command == "$DAT") {
+        else if (command.find("$DAT") != std::string::npos) {
             if (currentState != State::COD) {
                 currentState = State::ERROR;
                 break;
@@ -111,7 +111,7 @@ void ParserProcess::parse() {
 
             continue;
         }
-        else if (command == "$END") {
+        else if (command.find("$END") != std::string::npos) {
             if (currentState != State::DAT) {
                 currentState = State::ERROR;
                 break;

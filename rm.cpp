@@ -21,7 +21,7 @@ RM::RM()
         vmmemory[i]=mem->getMemoryBlockAddress(block);
     }
     }
-    vmmemory[14]->set(1,0xFFFFFFFF);
+    vmmemory[14]->set(1,0xFFFFFFFF);//testing
     this->cp->incSP();
 
     vmmemory[0]->set(0,0x48414C54);
@@ -230,6 +230,16 @@ ParsedProgram *RM::parseProgram() {
         return nullptr;
     }
     else {
+        ParsedProgram *prog = parser.getParsedProgram();
+        uint32_t masyvas[prog->getCodeSize()];
+        for(int i = 0 ; i<prog->getCodeSize();i++){
+            this->mem->set((this->mem->get(this->cp->getPC2()-1+(i>>4))) *16 +i,*(prog->getCode()+i));
+//            masyvas=*(prog->getCode()+i);
+            }
+        for(int i = 0 ; i<prog->getDataSize();i++){
+            this->mem->set((this->mem->get(this->cp->getPC2()-1+(i>>4)+7)) *16 +i,*(prog->getData()+i));
+//            masyvas=*(prog->getCode()+i);
+            }
         return parser.getParsedProgram();
     }
 }

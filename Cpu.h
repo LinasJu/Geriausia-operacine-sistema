@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include "vm.h"
 
 class Cpu {
 private:
@@ -28,6 +29,8 @@ private:
 
 public:
     void TIpp();
+
+    friend class VM;
 
     Cpu();
 
