@@ -206,9 +206,8 @@ void RM::loadFlashToSupervisorMemory() {
     supervisorSize = static_cast<uint16_t>((size + size % 4) / 4);
     supervisorMemory = new uint32_t[supervisorSize];
     for (int i = 0; i < supervisorSize; i++) {
-        supervisorMemory[i] = static_cast<uint32_t>(
-                (buffer[4*i] << 24) + (buffer[4*i + 1] << 16) + (buffer[4*i + 2] << 8) + buffer[4*i + 3]
-        );
+        supervisorMemory[i] = (uint32_t)(buffer[4*i] << 24) + (uint32_t)((buffer[4*i + 1] << 16) & 0x00FF0000)
+                + (uint16_t)((buffer[4*i + 2] << 8)) + buffer[4*i + 3];
     }
 
     delete[] buffer;
