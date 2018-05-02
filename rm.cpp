@@ -231,12 +231,14 @@ ParsedProgram *RM::parseProgram() {
     }
     else {
         ParsedProgram *prog = parser.getParsedProgram();
-        uint32_t masyvas[prog->getCodeSize()];
+        //uint32_t masyvas[prog->getCodeSize()];
         for(int i = 0 ; i<prog->getCodeSize();i++){
+            uint32_t g = *(prog->getCode()+i);
             this->mem->set((this->mem->get(this->cp->getPC2()-1+(i>>4))) *16 +i,*(prog->getCode()+i));
 //            masyvas=*(prog->getCode()+i);
             }
         for(int i = 0 ; i<prog->getDataSize();i++){
+            uint32_t g = *(prog->getData()+i);
             this->mem->set((this->mem->get(this->cp->getPC2()-1+(i>>4)+7)) *16 +i,*(prog->getData()+i));
 //            masyvas=*(prog->getCode()+i);
             }

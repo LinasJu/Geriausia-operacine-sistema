@@ -10,11 +10,11 @@ void Printer::print(const uint32_t *source, uint8_t words) {
 }
 void Printer::print(const uint32_t *source, uint8_t words,MainWindow *w) {
     for (uint8_t i = 0; i < words; i++) {
-        w->appendOutput(std::to_string(*(source+i)));
+        w->appendOutput(std::to_string((int32_t)*(source+i)));
     }
 }
 void Printer::print(const uint32_t source,MainWindow *w) {
-        w->appendOutput(std::to_string(source));
+        w->appendOutput(std::to_string((int32_t)source));
 }
 void Printer::prints(const uint32_t *source, uint8_t words,MainWindow *w) {
     for (uint8_t i = 0; i < words; i++) {

@@ -5,10 +5,10 @@ VM::VM(MemoryBlock* memory[], Cpu* cpu)
 
     std::copy(memory, memory+16, this->memory);
     this->cpu = cpu;
-    this->CX = &this->cpu->CX;
-    this->PC = &this->cpu->PC;
-    this->SP = &this->cpu->SP;
-    this->PID = &this->cpu->PID;
+    this->CX = &(this->cpu->CX);
+    this->PC = &(this->cpu->PC);
+    this->SP = &(this->cpu->SP);
+    this->PID = &(this->cpu->PID);
 }
 
 void VM::next()
@@ -16,23 +16,23 @@ void VM::next()
     uint32_t cmd = get_from_memory(cpu->getPC1());
 
     switch (cmd) {
-    case ('A' << 24) + ('D' << 16) + ('D' << 8):
+    case ('A' << 24) + ('D' << 16) + ('D' << 8) + ' ':
         add();
         cpu->incPC();
         break;
-    case ('S' << 24) + ('U' << 16) + ('B' << 8):
+    case ('S' << 24) + ('U' << 16) + ('B' << 8) + ' ':
         sub();
         cpu->incPC();
         break;
-    case ('M' << 24) + ('U' << 16) + ('L' << 8)+ ' ':
+    case ('M' << 24) + ('U' << 16) + ('L' << 8) + ' ':
         mul();
         cpu->incPC();
         break;
-    case ('D' << 24) + ('I' << 16) + ('V' << 8):
+    case ('D' << 24) + ('I' << 16) + ('V' << 8) + ' ':
         div();
         cpu->incPC();
         break;
-    case ('C' << 24) + ('M' << 16) + ('P' << 8):
+    case ('C' << 24) + ('M' << 16) + ('P' << 8) + ' ':
         cmp();
         cpu->incPC();
         break;
@@ -55,7 +55,7 @@ void VM::next()
     default:
         break;
     }
-    switch ((cmd & 0xFFFF0000 )>> 16) {
+    switch ((cmd & 0xFFFF0000 ) >> 16) {
     case ('L' << 8) + 'D':
         ld((uint8_t)cmd&0x00FF);
         cpu->incPC();
@@ -65,7 +65,7 @@ void VM::next()
         cpu->incPC();
         break;
     case ('P' << 8) + 'S':
-        ps((uint8_t)cmd&0x00FF);
+        ps((uint8_t)cmd&0x000000FF);
         cpu->incPC();
         break;
     case ('J' << 8) + 'P':
@@ -87,6 +87,7 @@ void VM::next()
         loop((uint8_t)cmd&0x00FF);
         break;
     default:
+//        cpu->setPI(1);
         break;
     }
 }
@@ -113,16 +114,23 @@ void VM::save()
 void VM::load()
 {
     if(temp != NULL){
-        *CX = temp->CX;
-        *PC = temp->PC;
-        *PID = temp->PID;
-        *SP = temp->SP;
+        cpu->setCX(temp->CX);
+        cpu->setPC(temp->PC);
+        cpu->setPID(temp->PID);
+        cpu->setSP(temp->SP);
+        this->CX = &(this->cpu->CX);
+        this->PC = &(this->cpu->PC);
+        this->SP = &(this->cpu->SP);
+        this->PID = &(this->cpu->PID);
     }
 }
 
 uint32_t VM::get_from_stack(uint8_t address)
 {
     uint8_t first = ((address & 0xF0) + 0xE0) >> 4;
+//    if(first < 0x0E){
+//        cpu->setPI(2);
+//    }
     uint8_t second = address & 0x0F;
     return memory[first]->get(second);
 }
@@ -131,12 +139,18 @@ void VM::set_to_stack(uint8_t address, uint32_t value)
 {
     uint8_t first = ((address & 0xF0) + 0xE0) >> 4;
     uint8_t second = address & 0x0F;
+//    if(first < 0x0E){
+//        cpu->setPI(2);
+//    }
     memory[first]->set(second, value);
 }
 
 uint32_t VM::get_from_memory(uint8_t address)
 {
     uint8_t first = (address & 0xF0) >> 4;
+//    if(first > 0x0E && first < 0x07){
+//        cpu->setPI(2);
+//    }
     uint8_t second = address & 0x0F;
     return memory[first]->get(second);
 }
@@ -144,6 +158,29 @@ uint32_t VM::get_from_memory(uint8_t address)
 void VM::set_to_memory(uint8_t address, uint32_t value)
 {
     uint8_t first = (address & 0xF0) >> 4;
+//    if(first > 0x0E && first < 0x07){
+//        cpu->setPI(2);
+//    }
+    uint8_t second = address & 0x0F;
+    memory[first]->set(second, value);
+}
+
+uint32_t VM::get_from_data(uint8_t address)
+{
+    uint8_t first = ((address & 0xF0) + 0x70) >> 4;
+//    if(first > 0x0E && first < 0x07){
+//        cpu->setPI(2);
+//    }
+    uint8_t second = address & 0x0F;
+    return memory[first]->get(second);
+}
+
+void VM::set_to_data(uint8_t address, uint32_t value)
+{
+    uint8_t first = ((address & 0xF0) + 0x70) >> 4;
+//    if(first > 0x0E && first < 0x07){
+//        cpu->setPI(2);
+//    }
     uint8_t second = address & 0x0F;
     memory[first]->set(second, value);
 }
@@ -189,7 +226,9 @@ void VM::sub()
 
     cpu->clearSF();
 
-    uint64_t result = (uint64_t)a - (uint64_t)b;
+    uint64_t c = b & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)b) : (uint64_t)b;
+
+    uint64_t result = (uint64_t)a - c;
 
     if(!(result&0xFFFFFFFF)){
         cpu->setZF(true);
@@ -313,7 +352,7 @@ void VM::cmp()
 
 void VM::ld(uint8_t address)
 {
-    uint32_t value = get_from_memory(address);
+    uint32_t value = get_from_data(address);
     set_to_stack(*SP+1, value);
     cpu->incSP();
 }

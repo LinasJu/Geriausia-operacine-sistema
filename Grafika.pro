@@ -34,7 +34,10 @@ SOURCES += \
     printer.cpp \
     virtualmachine.cpp \
     vm.cpp \
-    Cpu.cpp
+    Cpu.cpp \
+    lightbulb.cpp \
+    parsed_program.cpp \
+    parser_process.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -49,7 +52,10 @@ HEADERS += \
     printer.h \
     virtualmachine.h \
     vm.h \
-    Cpu.h
+    Cpu.h \
+    lightbulb.h \
+    parsed_program.h \
+    parser_process.h
 
 FORMS += \
         mainwindow.ui

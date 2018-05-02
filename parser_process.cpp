@@ -54,6 +54,7 @@ void ParserProcess::parse() {
 
             //program->setCode();
             auto buffer = new uint32_t[segmentLength];
+
             copyMemory(buffer, current, segmentLength);
             current += segmentLength;
             program->setName(buffer, segmentLength);

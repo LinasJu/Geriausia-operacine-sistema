@@ -30,6 +30,9 @@ class VM
     uint32_t get_from_memory(uint8_t address);
     void set_to_memory(uint8_t address, uint32_t value);
 
+    uint32_t get_from_data(uint8_t address);
+    void set_to_data(uint8_t address, uint32_t value);
+
     void add();
     void sub();
     void mul();

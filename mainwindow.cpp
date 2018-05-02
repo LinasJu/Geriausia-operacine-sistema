@@ -27,12 +27,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->ui->stepButton->setEnabled(false);
     this->ui->runButton->setEnabled(false);
     this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
-//    addToTable(0,0,0x4b61726f);
-//    addToTable(0,1,0x6c697320);
-//    addToTable(0,2,0x79726120);
-//    addToTable(0,3,0x67616964);
-//    addToTable(0,4,0x79730000);
-
 }
 void MainWindow::initRealMemoryTable(){
     QTableWidgetItem *item = new QTableWidgetItem();
@@ -272,7 +266,8 @@ void MainWindow::changeColor(uint32_t color){
     int r=(color&0xFF000000)>>24;
     int g=(color&0x00FF0000)>>16;
     int b=(color&0x0000FF00)>>8;
-    this->rect->setBrush(QBrush(QColor(r,g,b)));
+    int a=(color&0x000000FF);
+    this->rect->setBrush(QBrush(QColor(r,g,b,a)));
 }
 
 void MainWindow::on_pushButton_2_clicked()
