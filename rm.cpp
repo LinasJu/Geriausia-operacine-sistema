@@ -15,16 +15,9 @@ RM::RM()
     if(table>0){
     for(int i=0;i<16;i++){
         int block=this->mem->get((table-1)*16+i);
-//        for(int j=0;j<16;j++){
-//            this->addToTable(i,j,this->mem->get(block*16+j));
-//        }
         vmmemory[i]=mem->getMemoryBlockAddress(block);
     }
     }
-    vmmemory[14]->set(1,0xFFFFFFFF);//testing
-    this->cp->incSP();
-
-    vmmemory[0]->set(0,0x48414C54);
     current = new VM(vmmemory,cp);
 }
 
@@ -33,6 +26,7 @@ RM::~RM() {
 }
 
 void RM::addVM(){
+    ParsedProgram *prog = this->parseProgram();
     MemoryBlock* memory[16];
     for(uint8_t i=0;i<16;i++){
         *memory[i]=this->mem->getMemoryBlock(mem->get((((this->cp->getPC()&0xFF00)>>8)-1)*16+i));//change tempPC to CPU PC
@@ -54,7 +48,7 @@ bool RM::newTable()
             r= (rand() % 241) + 17;
         }
         address=(((this->cp->getPC()&0xFF00)>>8)-1);
-        this->mem->set(address*16+i,r);//change tempPC to CPU PC
+        this->mem->set(address*16+i,r);
 
     }
     return true;
@@ -230,7 +224,7 @@ ParsedProgram *RM::parseProgram() {
         return nullptr;
     }
     else {
-        ParsedProgram *prog = parser.getParsedProgram();
+//        ParsedProgram *prog = parser.getParsedProgram();
         //uint32_t masyvas[prog->getCodeSize()];
         for(int i = 0 ; i<prog->getCodeSize();i++){
             uint32_t g = *(prog->getCode()+i);
@@ -240,7 +234,6 @@ ParsedProgram *RM::parseProgram() {
         for(int i = 0 ; i<prog->getDataSize();i++){
             uint32_t g = *(prog->getData()+i);
             this->mem->set((this->mem->get(this->cp->getPC2()-1+(i>>4)+7)) *16 +i,*(prog->getData()+i));
-//            masyvas=*(prog->getCode()+i);
             }
         return parser.getParsedProgram();
     }
