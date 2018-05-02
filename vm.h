@@ -42,7 +42,7 @@ class VM
 
     void ld(uint8_t address);
     void pt(uint8_t address);
-    void ps(uint8_t value);
+    void ps(uint16_t value);
 
     void jp(uint8_t address);
     void je(uint8_t address);

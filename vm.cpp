@@ -65,7 +65,7 @@ void VM::next()
         cpu->incPC();
         break;
     case ('P' << 8) + 'S':
-        ps((uint8_t)cmd&0x000000FF);
+        ps((uint16_t)cmd&0x0000FFFF);
         cpu->incPC();
         break;
     case ('J' << 8) + 'P':
@@ -368,7 +368,7 @@ void VM::pt(uint8_t address)
     cpu->incSP();
 }
 
-void VM::ps(uint8_t value)
+void VM::ps(uint16_t value)
 {
     set_to_stack(*SP+1, value);
     cpu->incSP();
