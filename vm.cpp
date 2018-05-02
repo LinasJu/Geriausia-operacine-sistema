@@ -162,7 +162,7 @@ void VM::set_to_memory(uint8_t address, uint32_t value)
 uint32_t VM::get_from_data(uint8_t address)
 {
     uint8_t first = ((address & 0xF0) + 0x70) >> 4;
-    if(first > 0x0E && first < 0x07){
+    if(first > 0x0E || first < 0x07){
         cpu->setPI(1);
     }
     uint8_t second = address & 0x0F;
@@ -172,7 +172,7 @@ uint32_t VM::get_from_data(uint8_t address)
 void VM::set_to_data(uint8_t address, uint32_t value)
 {
     uint8_t first = ((address & 0xF0) + 0x70) >> 4;
-    if(first > 0x0E && first < 0x07){
+    if(first > 0x0E || first < 0x07){
         cpu->setPI(1);
     }
     uint8_t second = address & 0x0F;
