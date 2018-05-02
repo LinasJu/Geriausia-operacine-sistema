@@ -87,7 +87,7 @@ void VM::next()
         loop((uint8_t)cmd&0x00FF);
         break;
     default:
-//        cpu->setPI(1);
+        cpu->setPI(2);
         break;
     }
 }
@@ -128,9 +128,9 @@ void VM::load()
 uint32_t VM::get_from_stack(uint8_t address)
 {
     uint8_t first = ((address & 0xF0) + 0xE0) >> 4;
-//    if(first < 0x0E){
-//        cpu->setPI(2);
-//    }
+    if(first < 0x0E){
+        cpu->setPI(1);
+    }
     uint8_t second = address & 0x0F;
     return memory[first]->get(second);
 }
@@ -139,18 +139,15 @@ void VM::set_to_stack(uint8_t address, uint32_t value)
 {
     uint8_t first = ((address & 0xF0) + 0xE0) >> 4;
     uint8_t second = address & 0x0F;
-//    if(first < 0x0E){
-//        cpu->setPI(2);
-//    }
+    if(first < 0x0E){
+        cpu->setPI(1);
+    }
     memory[first]->set(second, value);
 }
 
 uint32_t VM::get_from_memory(uint8_t address)
 {
     uint8_t first = (address & 0xF0) >> 4;
-//    if(first > 0x0E && first < 0x07){
-//        cpu->setPI(2);
-//    }
     uint8_t second = address & 0x0F;
     return memory[first]->get(second);
 }
@@ -158,9 +155,6 @@ uint32_t VM::get_from_memory(uint8_t address)
 void VM::set_to_memory(uint8_t address, uint32_t value)
 {
     uint8_t first = (address & 0xF0) >> 4;
-//    if(first > 0x0E && first < 0x07){
-//        cpu->setPI(2);
-//    }
     uint8_t second = address & 0x0F;
     memory[first]->set(second, value);
 }
@@ -168,9 +162,9 @@ void VM::set_to_memory(uint8_t address, uint32_t value)
 uint32_t VM::get_from_data(uint8_t address)
 {
     uint8_t first = ((address & 0xF0) + 0x70) >> 4;
-//    if(first > 0x0E && first < 0x07){
-//        cpu->setPI(2);
-//    }
+    if(first > 0x0E && first < 0x07){
+        cpu->setPI(1);
+    }
     uint8_t second = address & 0x0F;
     return memory[first]->get(second);
 }
@@ -178,9 +172,9 @@ uint32_t VM::get_from_data(uint8_t address)
 void VM::set_to_data(uint8_t address, uint32_t value)
 {
     uint8_t first = ((address & 0xF0) + 0x70) >> 4;
-//    if(first > 0x0E && first < 0x07){
-//        cpu->setPI(2);
-//    }
+    if(first > 0x0E && first < 0x07){
+        cpu->setPI(1);
+    }
     uint8_t second = address & 0x0F;
     memory[first]->set(second, value);
 }
@@ -190,9 +184,12 @@ void VM::add()
     uint32_t a = get_from_stack(cpu->getSP1minus1());
     uint32_t b = get_from_stack(cpu->getSP1());
 
+    uint64_t c = a & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)a) : (uint64_t)a;
+    uint64_t d = b & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)b) : (uint64_t)b;
+
     cpu->clearSF();
 
-    uint64_t result = (uint64_t)a + (uint64_t)b;
+    uint64_t result = c + d;
 
 
     if(!(result&0xFFFFFFFF)){
@@ -224,11 +221,12 @@ void VM::sub()
     uint32_t a = get_from_stack(cpu->getSP1minus1());
     uint32_t b = get_from_stack(cpu->getSP1());
 
+    uint64_t c = a & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)a) : (uint64_t)a;
+    uint64_t d = b & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)b) : (uint64_t)b;
+
     cpu->clearSF();
 
-    uint64_t c = b & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)b) : (uint64_t)b;
-
-    uint64_t result = (uint64_t)a - c;
+    uint64_t result = c - d;
 
     if(!(result&0xFFFFFFFF)){
         cpu->setZF(true);
@@ -259,9 +257,12 @@ void VM::mul()
     uint32_t a = get_from_stack(cpu->getSP1minus1());
     uint32_t b = get_from_stack(cpu->getSP1());
 
+    uint64_t c = a & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)a) : (uint64_t)a;
+    uint64_t d = b & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)b) : (uint64_t)b;
+
     cpu->clearSF();
 
-    uint64_t result = (uint64_t)a * (uint64_t)b;
+    uint64_t result = c * d;
 
     if(!(result&0xFFFFFFFF)){
         cpu->setZF(true);
@@ -296,9 +297,12 @@ void VM::div()
     uint32_t a = get_from_stack(cpu->getSP1minus1());
     uint32_t b = get_from_stack(cpu->getSP1());
 
-    uint64_t result = (uint64_t)a / (uint64_t)b;
+    uint64_t c = a & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)a) : (uint64_t)a;
+    uint64_t d = b & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)b) : (uint64_t)b;
 
     cpu->clearSF();
+
+    uint64_t result = c / d;
 
     if(!b){
         cpu->setPI(4);
