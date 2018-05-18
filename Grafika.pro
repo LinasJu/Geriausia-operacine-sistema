@@ -37,7 +37,8 @@ SOURCES += \
     Cpu.cpp \
     lightbulb.cpp \
     parsed_program.cpp \
-    parser_process.cpp
+    parser_process.cpp \
+    virtualgui.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -55,7 +56,10 @@ HEADERS += \
     Cpu.h \
     lightbulb.h \
     parsed_program.h \
-    parser_process.h
+    parser_process.h \
+    virtualgui.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    virtualgui.ui \
+    virtualgui.ui

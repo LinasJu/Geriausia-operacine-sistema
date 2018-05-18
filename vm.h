@@ -62,6 +62,7 @@ class VM
 
     void prts();
     void prtn();
+    void lamp();
 private:
     uint16_t* PC;
     uint16_t* SP;

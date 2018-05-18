@@ -14,79 +14,104 @@ VM::VM(MemoryBlock* memory[], Cpu* cpu)
 void VM::next()
 {
     uint32_t cmd = get_from_memory(cpu->getPC1());
-
+    bool flag = true;
     switch (cmd) {
     case ('A' << 24) + ('D' << 16) + ('D' << 8) + ' ':
         add();
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('S' << 24) + ('U' << 16) + ('B' << 8) + ' ':
         sub();
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('M' << 24) + ('U' << 16) + ('L' << 8) + ' ':
         mul();
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('D' << 24) + ('I' << 16) + ('V' << 8) + ' ':
         div();
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('C' << 24) + ('M' << 16) + ('P' << 8) + ' ':
         cmp();
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('S' << 24) + ('E' << 16) + ('T' << 8) + 'C':
         setc();
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('P' << 24) + ('R' << 16) + ('T' << 8) + 'N':
         prtn();
         cpu->incPC();
+        cpu->decTI(3);
         break;
     case ('P' << 24) + ('R' << 16) + ('T' << 8) + 'S':
         prts();
         cpu->incPC();
+        cpu->decTI(3);
         break;
     case ('H' << 24) + ('A' << 16) + ('L' << 8) + 'T':
         halt();
         cpu->incPC();
+        cpu->decTI(1);
+        break;
+    case ('L' << 24) + ('A' << 16) + ('M' << 8) + 'P':
+        lamp();
+        cpu->incPC();
+        cpu->decTI(3);
         break;
     default:
+        flag= false;
         break;
     }
     switch ((cmd & 0xFFFF0000 ) >> 16) {
     case ('L' << 8) + 'D':
         ld((uint8_t)cmd&0x00FF);
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('P' << 8) + 'T':
         pt((uint8_t)cmd&0x00FF);
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('P' << 8) + 'S':
         ps((uint16_t)cmd&0x0000FFFF);
         cpu->incPC();
+        cpu->decTI(1);
         break;
     case ('J' << 8) + 'P':
         jp((uint8_t)cmd&0x00FF);
+        cpu->decTI(1);
         break;
     case ('J' << 8) + 'E':
         je((uint8_t)cmd&0x00FF);
+        cpu->decTI(1);
         break;
     case ('J' << 8) + 'N':
         jn((uint8_t)cmd&0x00FF);
+        cpu->decTI(1);
         break;
     case ('J' << 8) + 'L':
         jl((uint8_t)cmd&0x00FF);
+        cpu->decTI(1);
         break;
     case ('J' << 8) + 'G':
         jg((uint8_t)cmd&0x00FF);
+        cpu->decTI(1);
         break;
     case ('L' << 8) + 'P':
         loop((uint8_t)cmd&0x00FF);
+        cpu->decTI(1);
         break;
     default:
+        if(!flag)
         cpu->setPI(2);
         break;
     }
@@ -132,6 +157,9 @@ uint32_t VM::get_from_stack(uint8_t address)
         cpu->setPI(1);
     }
     uint8_t second = address & 0x0F;
+    if(first==0x0E && second ==0x00){
+    cpu->setPI(1);
+    }
     return memory[first]->get(second);
 }
 
@@ -141,6 +169,9 @@ void VM::set_to_stack(uint8_t address, uint32_t value)
     uint8_t second = address & 0x0F;
     if(first < 0x0E){
         cpu->setPI(1);
+    }
+    if(first==0x0E && second ==0x00){
+    cpu->setPI(1);
     }
     memory[first]->set(second, value);
 }
@@ -233,7 +264,7 @@ void VM::sub()
     }
 
     if(result & 0x80000000){
-        cpu->setSF(true);
+        cpu->setSiF(true);
     }
 
     if(result > 0xFFFFFFFF){
@@ -269,7 +300,7 @@ void VM::mul()
     }
 
     if(result & 0x80000000){
-        cpu->setSF(true);
+        cpu->setSiF(true);
     }
 
     if(result > 0xFFFFFFFF){
@@ -314,7 +345,7 @@ void VM::div()
     }
 
     if(result & 0x80000000){
-        cpu->setSF(true);
+        cpu->setSiF(true);
     }
     if(result > 0xFFFFFFFF){
         cpu->setCF(true);
@@ -330,16 +361,19 @@ void VM::cmp()
     uint32_t a = get_from_stack(cpu->getSP1minus1());
     uint32_t b = get_from_stack(cpu->getSP1());
 
+    uint64_t c = a & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)a) : (uint64_t)a;
+    uint64_t d = b & 0x80000000 ? (uint64_t)(0xFFFFFFFF00000000 | (uint64_t)b) : (uint64_t)b;
+
     cpu->clearSF();
 
-    uint64_t result = (uint64_t)a - (uint64_t)b;
+    uint64_t result = c - d;
 
     if(!(result&0xFFFFFFFF)){
         cpu->setZF(true);
     }
 
     if(result & 0x80000000){
-        cpu->setSF(true);
+        cpu->setSiF(true);
     }
 
     if(result > 0xFFFFFFFF){
@@ -410,13 +444,14 @@ void VM::jg(uint8_t address)
 void VM::setc()
 {
     uint32_t value = get_from_stack(cpu->getSP1());
+    cpu->decSP();
     *CX = (uint8_t)value;
 }
 
 void VM::loop(uint8_t address)
 {
-    *CX--;
-    if(*CX > 0){
+    this->cpu->setCX(this->cpu->getCX()-1);
+    if(this->cpu->getCX() > 0){
         cpu->setPC1(address);
     }
     else{
@@ -452,6 +487,11 @@ void VM::stop()
 void VM::prts()
 {
     cpu->setSI(1);
+}
+
+void VM::lamp()
+{
+    cpu->setSI(5);
 }
 
 void VM::prtn()

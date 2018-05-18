@@ -12,6 +12,7 @@
 #include "mainwindow.h"
 #include "parsed_program.h"
 #include <QTableWidget>
+#include <QCoreApplication>
 class MainWindow;
 class Printer;
 class RM
@@ -26,6 +27,7 @@ private:
     MainWindow *w = NULL;
     Printer *printer;
     FlashReader *flash;
+    bool stop =false;
     Lightbulb *lightbulb;
     VM *vms[15];
     Memory *mem;
@@ -45,7 +47,7 @@ private:
     void updateGUI();
     int getStackPosition();
     void insertFlash(std::string path);
-    VM getNext();
+    void getNext();
     VM *current;
     void next();
     void run();

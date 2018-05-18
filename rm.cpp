@@ -9,16 +9,6 @@ RM::RM()
     mem=new Memory();
     flash= new FlashReader();
     this->initPageTable();
-    this->newTable();//testing
-    MemoryBlock* vmmemory[16];
-    int table=(this->cp->getPC()&0xFF00)>>8;
-    if(table>0){
-    for(int i=0;i<16;i++){
-        int block=this->mem->get((table-1)*16+i);
-        vmmemory[i]=mem->getMemoryBlockAddress(block);
-    }
-    }
-    current = new VM(vmmemory,cp);
 }
 
 RM::~RM() {
@@ -26,11 +16,29 @@ RM::~RM() {
 }
 
 void RM::addVM(){
-    ParsedProgram *prog = this->parseProgram();
-    MemoryBlock* memory[16];
-    for(uint8_t i=0;i<16;i++){
-        *memory[i]=this->mem->getMemoryBlock(mem->get((((this->cp->getPC()&0xFF00)>>8)-1)*16+i));//change tempPC to CPU PC
+
+    if (this->newTable()){
+        ParsedProgram *prog = this->parseProgram();
+                for(int i = 0 ; i<prog->getCodeSize();i++){
+                    uint32_t g = *(prog->getCode()+i);
+                    int a= (this->mem->get(this->cp->getPC2()-1+(i>>4))) *16 +i;
+                    this->mem->set((this->mem->get((this->cp->getPC2()-1)*16+(i>>4)))*16 +i,*(prog->getCode()+i));
+                    }
+                for(int i = 0 ; i<prog->getDataSize();i++){
+                    uint32_t g = *(prog->getData()+i);
+                    this->mem->set((this->mem->get((this->cp->getPC2()-1)*16+(i>>4)+7)) *16 +i,*(prog->getData()+i));
+                    }
+        MemoryBlock* vmmemory[16];
+        int table=(this->cp->getPC()&0xFF00)>>8;
+        if(table>0){
+        for(int i=0;i<16;i++){
+          int block=this->mem->get((table-1)*16+i);
+          vmmemory[i]=mem->getMemoryBlockAddress(block);}                                        }
+        current = new VM(vmmemory,cp);
+        vms[this->cp->getPC2()-1]=current;
     }
+    else this->w->appendOutput("Out of memory");
+
 }
 bool RM::newTable()
 {
@@ -56,7 +64,6 @@ bool RM::newTable()
 bool RM::isTaken(uint32_t block, uint8_t curr)
 {
     for(int i = (((this->cp->getPC()&0xFF00)>>8)-1)*16+curr ; i >=0;i--){
-        //change tempPC to CPU PC
         if(this->mem->get(i) ==block) return true;
     }
     return false;
@@ -76,7 +83,8 @@ void RM::timerInterrupt(){
 }
 void RM::programInterrupt(){
     if(vms[this->cp->getPC2()-1]!=NULL ){
-    delete vms[this->cp->getPC2()-1];}
+    delete vms[this->cp->getPC2()-1];
+    vms[this->cp->getPC2()-1]=NULL;}
     if(this->cp->getPI()==1){
         w->appendOutput("Invalid address");}
     else if(this->cp->getPI()==2){
@@ -91,6 +99,9 @@ void RM::programInterrupt(){
     this->cp->setPI(0);
     w->changeRunButtonState(false);
     w->changeStepButtonState(false);
+    if(this->cp->getPC2()>1){
+        w->changeNextButton(true);
+    }else this->cp->setPC2(0);
 }
 void RM::supervisorInterrupt(){
     if(this->cp->getSI()==1){
@@ -120,7 +131,9 @@ void RM::supervisorInterrupt(){
         delete vms[this->cp->getPC2()-1];
         w->changeRunButtonState(false);
         w->changeStepButtonState(false);
-
+        if(this->cp->getPC2()>1){
+            w->changeNextButton(true);
+        }else this->cp->setPC2(0);
     }
 
 }
@@ -137,12 +150,16 @@ int RM::getStackPosition(){
 void RM::insertFlash(std::string path){
     flash->connectToDevice(path);
 }
-VM RM::getNext(){//sets current VM and returns it
-    if((this->cp->getPC2()-1)>1){
-    this->current=this->vms[this->cp->getPC2()-1];}
-    return *current;
+void RM::getNext(){//sets current VM and returns it
+    if((this->cp->getPC2())>=1){
+    this->cp->setPC2(this->cp->getPC2()-1);
+    this->current=this->vms[this->cp->getPC2()-1];
+    this->cp->setPC1(0);
+    this->cp->setSP(0);
+    }
 }
 void RM::next(){
+    if(vms[this->cp->getPC2()-1]!=NULL ){
     if(this->cp->getMODE()==0){
     current->next();
     if(this->test()){
@@ -151,24 +168,25 @@ void RM::next(){
     }
     }
     else{
-
-        if(this->cp->getPI()){
-            this->programInterrupt();
-        }
-        if(this->cp->getSI()){
-            this->supervisorInterrupt();
-        }
         if(this->cp->getTI()<0){
             this->timerInterrupt();
         }
         if(this->cp->getIOI()){
             this->inputOutputInterrupt();
         }
+        if(this->cp->getSI()){
+            this->supervisorInterrupt();
+        }
+        if(this->cp->getPI()){
+            this->programInterrupt();
+        }
+
         this->cp->setMODE(0);
 //        if(current!=NULL)
-//        current->load();
+//       current->load();
     }
     this->w->update();
+    }
 }
 bool RM::test(){
     return ((this->cp->getPI() + this->cp->getIOI() + this->cp->getSI()) || this->cp->getTI()<=0);
@@ -207,7 +225,7 @@ void RM::loadFlashToSupervisorMemory() {
     supervisorMemory = new uint32_t[supervisorSize];
     for (int i = 0; i < supervisorSize; i++) {
         supervisorMemory[i] = (uint32_t)(buffer[4*i] << 24) + (uint32_t)((buffer[4*i + 1] << 16) & 0x00FF0000)
-                + (uint16_t)((buffer[4*i + 2] << 8)) + buffer[4*i + 3];
+                + (uint16_t)((buffer[4*i + 2] << 8)) + (uint8_t)(buffer[4*i + 3]);
     }
 
     delete[] buffer;
@@ -223,23 +241,16 @@ ParsedProgram *RM::parseProgram() {
         return nullptr;
     }
     else {
-//        ParsedProgram *prog = parser.getParsedProgram();
-        //uint32_t masyvas[prog->getCodeSize()];
-        for(int i = 0 ; i<prog->getCodeSize();i++){
-            uint32_t g = *(prog->getCode()+i);
-            this->mem->set((this->mem->get(this->cp->getPC2()-1+(i>>4))) *16 +i,*(prog->getCode()+i));
-//            masyvas=*(prog->getCode()+i);
-            }
-        for(int i = 0 ; i<prog->getDataSize();i++){
-            uint32_t g = *(prog->getData()+i);
-            this->mem->set((this->mem->get(this->cp->getPC2()-1+(i>>4)+7)) *16 +i,*(prog->getData()+i));
-            }
         return parser.getParsedProgram();
     }
 }
 
 void RM::run(){
-    while((vms[this->cp->getPC2()-1]!=NULL )){
+    while((vms[this->cp->getPC2()-1]!=NULL ) && (this->cp->getPC2()>0) && !stop){
         this->next();
+        QCoreApplication::processEvents();
+    }
+    if(this->cp->getPC2()>1){
+        w->changeNextButton(true);
     }
 }

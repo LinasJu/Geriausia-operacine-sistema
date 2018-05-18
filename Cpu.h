@@ -14,11 +14,11 @@ private:
     uint32_t PLR;
     uint16_t PC;
     uint16_t SP;
-    uint16_t SM;
     uint8_t CX;
     uint8_t CH1;
     uint8_t CH2;
     uint8_t CH3;
+    uint8_t CH4;
     uint8_t IOI;
     uint8_t SF;
     uint8_t PID;
@@ -54,13 +54,10 @@ public:
     void decSP();
     void incSP();
 
-    void setSM(uint16_t);
-    void setSM1(uint8_t);
-    void setSM2(uint8_t);
-
     void setCH1(uint8_t);
     void setCH2(uint8_t);
     void setCH3(uint8_t);
+    void setCH4(uint8_t);
 
     void setCX(uint8_t);
 
@@ -101,15 +98,14 @@ public:
     uint8_t getSP1minus1();
     uint8_t getSP2();
 
-    uint16_t getSM();
-    uint8_t getSM1();
-    uint8_t getSM2();
 
     uint8_t getCX();
 
     uint16_t getCH1();
     uint8_t getCH2();
     uint8_t getCH3();
+    uint8_t getCH4();
+
 
     uint8_t getIOI();
 
@@ -130,6 +126,8 @@ public:
     uint8_t getPI();
 
     uint8_t getSI();
+
+    void decTI(int a);
 
 };
 

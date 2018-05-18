@@ -11,6 +11,7 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
 #include "rm.h"
+#include "virtualgui.h"
 #include <QFileDialog>
 namespace Ui {
 class MainWindow;
@@ -26,8 +27,10 @@ public:
     ~MainWindow();
     void addToTable(uint8_t row, uint8_t column, uint32_t item);
     void initTable();
+    void addTable(std::string str="name");
+    void removeTable();
     void appendOutput(std::string str);
-    std::string intToHexStr(int a,int pos);
+    static std::string intToHexStr(int a,int pos);
     void update();
     void updateRealTable();
     void resetRMcolor();
@@ -48,16 +51,22 @@ private slots:
 
      void on_pushButton_2_clicked();
 
+     void on_next_clicked();
+
+     void on_stop_clicked();
+
 private:
      QGraphicsScene *scene;
      Ui::MainWindow *ui;
      QGraphicsRectItem *rect;
      RM* realmachine;
+    virtualGUI *vgs[15];
     void addToolTip(uint8_t row,uint8_t column, uint32_t item);
     void headerToolTip(uint8_t row);
     void initRealMemoryTable();
     void changeRunButtonState(bool a);
     void changeStepButtonState(bool a);
+    void changeNextButton(bool a);
     void changeColor(uint32_t);
 };
 

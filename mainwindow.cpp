@@ -8,25 +8,29 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    for(int i = 0;i<14;i++){
+        vgs[i]=NULL;
+    }
     realmachine = new RM();
     realmachine->initWindow(*this);
     ui->setupUi(this);
     QMainWindow::showMaximized();
-    ui->tableVM->horizontalHeader()->setSectionResizeMode (QHeaderView::Fixed);
-    ui->tableVM->verticalHeader()->setSectionResizeMode (QHeaderView::Fixed);
     scene= new QGraphicsScene(this);
     ui->gView->setScene(scene);
     rect = new QGraphicsRectItem();
     rect->setRect(0,0,100,100);
     rect->setPen( QPen( Qt::black, 1 ) );
-    rect->setBrush( Qt::gray );
+    rect->setBrush( Qt::white );
     scene->addItem(rect);
-    initTable();
     initRealMemoryTable();
     this->ui->disconnectButton->setEnabled(false);
-    //this->ui->stepButton->setEnabled(false);
+    this->ui->stepButton->setEnabled(false);
+    this->ui->pushButton_2->setEnabled(false);
     this->ui->runButton->setEnabled(false);
-    this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
+    this->ui->next->setEnabled(false);
+    this->ui->tabWidget->removeTab(0);
+    this->addTable();
+    this->update();
 }
 void MainWindow::initRealMemoryTable(){
     QTableWidgetItem *item = new QTableWidgetItem();
@@ -43,31 +47,25 @@ void MainWindow::initRealMemoryTable(){
     }
 
 }
-void MainWindow::initTable(){
-    for(uint8_t i = 0; i<16 ; i++){
-        for(uint8_t j = 0 ; j<16; j++){
-             ui->tableVM->setItem(i, j, new QTableWidgetItem(QString("")));
-             if(i<6){
-                 ui->tableVM->item(i, j)->setBackground(Qt::blue);
-             }
-             else if(i<13){
-                 ui->tableVM->item(i, j)->setBackground(Qt::green);
-             }
-             else{
-                 ui->tableVM->item(i, j)->setBackground(Qt::yellow);
-             }
 
-        }
+void MainWindow::addTable(std::string str)
+{
+    virtualGUI *vg= new virtualGUI();
+    vgs[this->realmachine->cp->getPID()]=vg;
+    this->ui->tabWidget->addTab(vg,QString::fromStdString(str));
+}
+
+void MainWindow::removeTable()
+{
+    this->ui->tabWidget->removeTab(this->realmachine->cp->getPID()+1);
+    delete vgs[this->realmachine->cp->getPID()];
+    for(int i = this->realmachine->cp->getPID();i<14;i++){
+        vgs[i]=vgs[i+1];
     }
-    for(uint8_t i = 0; i<16 ; i++){
-        for(uint8_t j = 0 ; j<16; j++){
-            addToTable(i,j,0x00000000);
-        }
-    }
+    vgs[14]=NULL;
 }
 void MainWindow::addToTable(uint8_t row, uint8_t column, uint32_t item){
-    ui->tableVM->item(row, column)->setText(QString::fromStdString(this->intToHexStr(item,8)));
-    this->addToolTip(row,column,item);
+    vgs[this->realmachine->cp->getPID()]->addToTable(row,column,item);
 }
 void MainWindow::addToolTip(uint8_t row, uint8_t column, uint32_t item){
     char *ptr = (char*)&item;
@@ -101,19 +99,19 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void MainWindow::update(){
-    if(this->realmachine->lightbulb->getState())
-        this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbON.png"));
-    else
-        this->ui->lightbulb->setPixmap(QPixmap(qApp->applicationDirPath()+"/lightbulbOFF.png"));
     this->changeColor(this->realmachine->lightbulb->getState());
     this->updateRealTable();
-    ui->PCV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
-    ui->PIDV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
-    ui->SPV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSP(),4)));
-    ui->CXV->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCX(),2)));
+    int pid = this->realmachine->cp->getPID();
+    if(vgs[pid]){
+    vgs[pid]->setPC(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
+    vgs[pid]->setPID(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPID(),2)));
+    vgs[pid]->setSP(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSP(),4)));
+    vgs[pid]->setCX(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCX(),2)));
+    }
     ui->CXR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCX(),2)));
     ui->CH1R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH1(),2)));
     ui->CH2R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH2(),2)));
+    ui->CH2R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH4(),2)));
     ui->CH3R->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getCH3(),2)));
     ui->PLRR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPLR(),8)));
     ui->PCR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getPC(),4)));
@@ -127,22 +125,25 @@ void MainWindow::update(){
     ui->SIR->setText(QString::fromStdString(this->intToHexStr(this->realmachine->cp->getSI(),2)));
     int row;
     int column;
+    if(vgs[pid]){
     for(uint8_t i = 0; i<16 ; i++){
         for(uint8_t j = 0 ; j<16; j++){
              if(i<7){
-                 ui->tableVM->item(i, j)->setBackground(Qt::blue);
+                 vgs[pid]->setCellColour(i,j,Qt::blue);
              }
              else if(i<14){
-                 ui->tableVM->item(i, j)->setBackground(Qt::green);
+                 vgs[pid]->setCellColour(i,j,Qt::green);
              }
              else{
-                 ui->tableVM->item(i, j)->setBackground(Qt::yellow);
+                 vgs[pid]->setCellColour(i,j,Qt::yellow);
              }
 
         }
-    }
+    }}
+    if((this->realmachine->cp->getPC2()-1)>0){
     for(uint8_t i = 0; i<16 ; i++){
         int k = this->realmachine->mem->get((this->realmachine->cp->getPC2()-1)*16 +i);
+        if(k>0xff){
         for(uint8_t j = 0 ; j<16; j++){
              if(i<7){
                  ui->tableRM->item(k, j)->setBackground(Qt::blue);
@@ -154,14 +155,18 @@ void MainWindow::update(){
                  ui->tableRM->item(k, j)->setBackground(Qt::yellow);
              }
 
-        }
-    }
+        }}
+    }}
     row=this->realmachine->cp->getPC1()/16;
     column=this->realmachine->cp->getPC1()%16;
-    ui->tableVM->item(row, column)->setBackground(Qt::red);
+    if(row<16 && column <16 && vgs[pid]){
+    vgs[pid]->setCellColour(row,column,Qt::red);
+    }
     row=(this->realmachine->cp->getSP1()%256)/16 + 14;
     column=this->realmachine->cp->getSP1()%16;
-    ui->tableVM->item(row, column)->setBackground(Qt::red);
+    if(row<16 && column <16 && vgs[pid]){
+    vgs[pid]->setCellColour(row,column,Qt::red);
+    }
     int table=(realmachine->cp->getPC()&0xFF00)>>8;
     if(table>0){
     for(int i=0;i<16;i++){
@@ -181,6 +186,10 @@ void MainWindow::updateRealTable()
         row=(i&0xFF0) >> 4;
         ui->tableRM->item(row,column)->setText(QString::fromStdString(this->intToHexStr(this->realmachine->mem->get(i),8)));
     }
+    for(int j = 0;j<16;j++){
+    for(int i = 0; i<16;i++){
+        ui->tableRM->item(j,i)->setBackground(Qt::white);
+    }}
     if(this->realmachine->cp->getPC2()){
     for(int i = 0; i<16;i++){
         ui->tableRM->item(((this->realmachine->cp->getPC2()-1)),i)->setBackground(Qt::blue);
@@ -215,6 +224,7 @@ void MainWindow::on_connectButton_clicked()
     this->ui->checkBox->setChecked(true);
     this->ui->connectButton->setEnabled(false);
     this->ui->disconnectButton->setEnabled(true);
+    this->ui->pushButton_2->setEnabled(true);
 
 }
 std::string MainWindow::intToHexStr(int a,int pos){
@@ -243,6 +253,7 @@ void MainWindow::on_stepButton_clicked()
 
 void MainWindow::on_runButton_clicked()
 {
+    realmachine->stop=false;
     this->realmachine->run();
 }
 void MainWindow::changeRunButtonState(bool a){
@@ -252,15 +263,15 @@ void MainWindow::changeStepButtonState(bool a){
     this->ui->stepButton->setEnabled(a);
 }
 
-void MainWindow::on_pushButton_clicked()//button for testing purposes
+void MainWindow::on_pushButton_clicked()
 {
-    if(this->realmachine->lightbulb->getState())
-    this->realmachine->lightbulb->print(0);
-    else
-        this->realmachine->lightbulb->print(1);
-    this->update();
-    this->rect->setBrush(QBrush(QColor(100,100,100)));
-    this->resetRMcolor();
+   realmachine->flash->disconnectFromDevice();
+   this->ui->connectButton->setEnabled(true);
+   this->ui->disconnectButton->setEnabled(false);
+   delete this->realmachine;
+   realmachine = new RM();
+   realmachine->initWindow(*this);
+   update();
 }
 void MainWindow::changeColor(uint32_t color){
     int r=(color&0xFF000000)>>24;
@@ -273,6 +284,28 @@ void MainWindow::changeColor(uint32_t color){
 void MainWindow::on_pushButton_2_clicked()
 {
     realmachine->loadFlashToSupervisorMemory();
-    realmachine->parseProgram();
+    this->ui->stepButton->setEnabled(true);
+    this->ui->runButton->setEnabled(true);
+    realmachine->addVM();
+    realmachine->cp->setSP(0);
+    realmachine->cp->setPC1(0);
     this->update();
+    this->ui->pushButton_2->setEnabled(false);
+}
+
+void MainWindow::on_next_clicked()
+{
+    realmachine->getNext();
+    this->update();
+    this->ui->next->setEnabled(false);
+    this->ui->stepButton->setEnabled(true);
+    this->ui->runButton->setEnabled(true);
+}
+void MainWindow::changeNextButton(bool a){
+    this->ui->next->setEnabled(a);
+}
+
+void MainWindow::on_stop_clicked()
+{
+    realmachine->stop=true;
 }

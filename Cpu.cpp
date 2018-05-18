@@ -8,10 +8,10 @@ Cpu::Cpu(){
     this->PLR = 0;
     this->PC = 0;
     this->SP = 0;
-    this->SM = 0;
     this->CH1 = 0;
     this->CH2 = 0;
     this->CH3 = 0;
+    this->CH4 = 0;
     this->IOI = 0;
     this->SF = 0;
     this->PID = 0;
@@ -19,6 +19,7 @@ Cpu::Cpu(){
     this->TI = 10;
     this->PI = 0;
     this->SI = 0;
+    this->CX = 0;
 }
 
 
@@ -94,18 +95,6 @@ void Cpu::incSP()
     }
 }
 
-void Cpu::setSM(uint16_t SM){
-    this->SM = SM;
-}
-
-void Cpu::setSM1(uint8_t byte){
-    this->SM = this->SM & 0xFFFFFF00 | byte;
-}
-
-void Cpu::setSM2(uint8_t byte){
-    this->SM = this->SM & 0xFFFF00FF | (uint16_t(byte) << 8);
-}
-
 void Cpu::setCH1(uint8_t CH1){
     this->CH1 = CH1;
 }
@@ -116,6 +105,10 @@ void Cpu::setCH2(uint8_t CH2){
 
 void Cpu::setCH3(uint8_t CH3){
     this->CH3 = CH3;
+}
+
+void Cpu::setCH4(uint8_t CH4){
+    this->CH4 = CH4;
 }
 
 void Cpu::setIOI(uint8_t IOI){
@@ -249,18 +242,6 @@ uint8_t Cpu::getSP1minus1()
 uint8_t Cpu::getSP2(){
     return uint8_t((this->SP >> 8) & 0xFF);
 }
-
-uint16_t Cpu::getSM(){
-    return this->SP;
-}
-
-uint8_t Cpu::getSM1(){
-    return (this->SP & 0xFF);
-}
-
-uint8_t Cpu::getSM2(){
-    return uint8_t((this->SP >> 8) & 0xFF);
-}
 uint8_t Cpu::getCX(){
     return this->CX;
 }
@@ -274,6 +255,10 @@ uint8_t Cpu::getCH2(){
 
 uint8_t Cpu::getCH3(){
     return this->CH3;
+}
+
+uint8_t Cpu::getCH4(){
+    return this->CH4;
 }
 
 uint8_t Cpu::getIOI(){
@@ -325,4 +310,7 @@ uint8_t Cpu::getSI(){
 void Cpu::clearSF()
 {
     this->SF = 0;
+}
+void Cpu::decTI(int a){
+    this->TI=this->TI-a;
 }
